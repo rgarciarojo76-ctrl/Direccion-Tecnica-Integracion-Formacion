@@ -143,7 +143,11 @@ const parseRow = (row, source) => {
         tematica: topic,
         modalidad: modalidad || "Presencial",
         fechas: `${fechaInicioStr} - ${fechaFinStr}`,
-        startDateRaw: startDateObj, // Store Date Object for sorting/logic
+        startDate: startDateObj, // Date Object
+        startDatefmt: fechaInicioStr,
+        endDate: endDateObj,   // Date Object
+        endDatefmt: fechaFinStr,
+        startDateRaw: startDateObj, // Keep for sorting compatibility
         ubicacion: ubicacion || "Desconocida",
         delegacion: ubicacion || "Central",
         plazas: plazasDisponibles !== undefined ? plazasDisponibles : 0,
