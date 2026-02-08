@@ -39,6 +39,28 @@ const normalizeTopic = (text) => {
   return "General";
 };
 
+// DATE UTILS
+const getJsDate = (value) => {
+    if (!value) return null;
+    // If number, it's serial (Excel)
+    if (typeof value === 'number') {
+        const date = new Date((value - 25569) * 86400 * 1000);
+        // Correct timezone offset issues if needed, strictly for date part usually ok
+        return date;
+    }
+    // If string in dd/mm/yyyy format
+    if (typeof value === 'string' && value.match(/^\d{1,2}\/\d{1,2}\/\d{4}$/)) {
+        const [d, m, y] = value.split('/');
+        return new Date(y, m - 1, d);
+    }
+    return null;
+};
+
+const formatDate = (date) => {
+    if (!date || isNaN(date.getTime())) return "";
+    return date.toLocaleDateString('es-ES', { day: '2-digit', month: '2-digit', year: 'numeric' });
+};
+
 // DATA LOADING
 export const loadData = async () => {
   try {
@@ -50,6 +72,13 @@ export const loadData = async () => {
     // Combine
     let combined = [...aspyData, ...masData];
     
+    // Sort by Date (Ascending: Soonest first)
+    combined.sort((a, b) => {
+        const dateA = a.startDateRaw || new Date(2099, 11, 31);
+        const dateB = b.startDateRaw || new Date(2099, 11, 31);
+        return dateA - dateB;
+    });
+
     // Detect Synergies
     combined = detectSynergies(combined);
     
@@ -60,29 +89,9 @@ export const loadData = async () => {
   }
 };
 
-const parseMixedDate = (value) => {
-    if (!value) return "";
-    // If number, it's serial
-    if (typeof value === 'number') {
-        const date = new Date((value - 25569) * 86400 * 1000);
-        return date.toLocaleDateString('es-ES');
-    }
-    // If string, assume dd/mm/yyyy or simple string
-    return value;
-};
-
 // Common parser since both files seem to share structure now
 const parseRow = (row, source) => {
-    // 0: ID
-    // 1: Title
-    // 2: Start Date
-    // 3: End Date
-    // 4: Modality
-    // 5: Duration
-    // 6: Location (Provincia)
-    // 7: Max Seats (Plazas totales)
-    // 8: Enrolled (Inscritos)
-    // 9: Available (Disponibles)
+    // ... (same indices)
 
     const rawTitle = row[1];
     if (!rawTitle) return null;
@@ -93,14 +102,14 @@ const parseRow = (row, source) => {
     const duracion = row[5];
     const ubicacion = row[6];
     const plazasTotales = row[7];
-    const plazasDisponibles = row[9]; // Use available for display or logic? User asked for "Plazas". Usually implies available or total. Let's use Available for "Plazas" in table, but keep Total for calculation if needed.
+    const plazasDisponibles = row[9];
     
-    // For the table display "Plazas", let's show Available. 
-    // Wait, the KPI says "Confirmed". 
-    // Let's use Available (col 9) for the UI "Plazas".
+    // Date Parsing
+    const startDateObj = getJsDate(fechaInicioRaw);
+    const endDateObj = getJsDate(fechaFinRaw);
     
-    const fechaInicio = parseMixedDate(fechaInicioRaw);
-    const fechaFin = parseMixedDate(fechaFinRaw);
+    const fechaInicioStr = formatDate(startDateObj) || fechaInicioRaw; // Fallback to raw if logic fails
+    const fechaFinStr = formatDate(endDateObj) || fechaFinRaw;
 
     // Title processing
     let code = "N/A";
@@ -110,8 +119,6 @@ const parseRow = (row, source) => {
     if (source === 'ASPY') {
         // [CODE] Title | Info
         const prefixMatch = rawTitle.match(/^\[([^\]]+)\]/);
-        // Title Code (Suffix) e.g. "CURSO... PRO371R"
-        // Look for typical pattern: 3+ letters, numbers, optional letter at end of string
         const suffixMatch = rawTitle.match(/\s+([A-Z]{3,}\d+[A-Z]*)$/);
 
         if (prefixMatch) {
@@ -121,11 +128,9 @@ const parseRow = (row, source) => {
             code = suffixMatch[1];
             title = rawTitle.replace(suffixMatch[0], '').trim();
         } else {
-             // Fallback cleanup if different format
             title = cleanTitle(rawTitle);
         }
     } else {
-        // MAS usually comes clean, or use generic
         title = cleanTitle(rawTitle);
         code = `MAS-${row[0]}`;
     }
@@ -137,13 +142,13 @@ const parseRow = (row, source) => {
         title: title,
         tematica: topic,
         modalidad: modalidad || "Presencial",
-        fechas: `${fechaInicio} - ${fechaFin}`,
-        startDateRaw: fechaInicio, // Keep string for now, or convert to Date object for sorting? string dd/mm/yyyy is okay for display. Synergy needs Date object or parsed.
+        fechas: `${fechaInicioStr} - ${fechaFinStr}`,
+        startDateRaw: startDateObj, // Store Date Object for sorting/logic
         ubicacion: ubicacion || "Desconocida",
-        delegacion: ubicacion || "Central", // Delegation same as location if not specified
+        delegacion: ubicacion || "Central",
         plazas: plazasDisponibles !== undefined ? plazasDisponibles : 0,
         totalPlazas: plazasTotales || 0,
-        estado: (plazasDisponibles > 0) ? "CONFIRMADO" : "CERRADO", // Logic: If seats available -> Confirmed/Open. If 0 -> Closed? Or just default Confirmed.
+        estado: (plazasDisponibles > 0) ? "CONFIRMADO" : "CERRADO",
         duracion_presencial: duracion || 0
     };
 };
@@ -172,18 +177,16 @@ const fetchAndParseMAS = async () => {
 const detectSynergies = (courses) => {
   const processed = [...courses];
   
-  // Helper to get week number
-  const getWeek = (dateStr) => {
-    if(!dateStr) return -1;
-    const [d, m, y] = dateStr.split('/');
-    if (!d || !m || !y) return -1;
-    const date = new Date(y, m - 1, d);
+  // Helper to get week number from Date object
+  const getWeek = (date) => {
+    if (!date || !(date instanceof Date) || isNaN(date)) return -1;
     const oneJan = new Date(date.getFullYear(), 0, 1);
     const numberOfDays = Math.floor((date - oneJan) / (24 * 60 * 60 * 1000));
     return Math.ceil((date.getDay() + 1 + numberOfDays) / 7);
   };
 
   for (let i = 0; i < processed.length; i++) {
+
     for (let j = i + 1; j < processed.length; j++) {
       const c1 = processed[i];
       const c2 = processed[j];
