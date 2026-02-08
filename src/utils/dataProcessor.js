@@ -72,6 +72,12 @@ export const loadData = async () => {
     // Combine
     let combined = [...aspyData, ...masData];
     
+    // Filter past courses (keep today and future)
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    
+    combined = combined.filter(c => c.startDateRaw && c.startDateRaw >= today);
+
     // Sort by Date (Ascending: Soonest first)
     combined.sort((a, b) => {
         const dateA = a.startDateRaw || new Date(2099, 11, 31);
