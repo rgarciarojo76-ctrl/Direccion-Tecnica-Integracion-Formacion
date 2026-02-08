@@ -15,7 +15,7 @@ const DataTable = ({ data }) => {
       <table className="w-full text-left border-collapse bg-white">
         <thead>
           <tr className="bg-slate-50 border-b border-slate-200 text-[10px] font-bold text-slate-500 uppercase tracking-wider">
-            <th className="p-3 text-center w-16">Org.</th>
+            <th className="p-3 text-center w-10">Org.</th>
             <th className="p-3">Curso</th>
             <th className="p-3">Modalidad</th>
             <th className="p-3 text-center">Duración</th>
@@ -37,7 +37,7 @@ const DataTable = ({ data }) => {
                  <img 
                     src={getLogo(row.source)} 
                     alt={row.source} 
-                    className="h-5 max-w-[50px] object-contain mx-auto opacity-80 hover:opacity-100 transition-opacity" 
+                    className="h-3.5 max-w-[30px] object-contain mx-auto opacity-80 hover:opacity-100 transition-opacity" 
                  />
               </td>
 
