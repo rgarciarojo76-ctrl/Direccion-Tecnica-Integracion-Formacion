@@ -109,10 +109,17 @@ const parseRow = (row, source) => {
 
     if (source === 'ASPY') {
         // [CODE] Title | Info
-        const match = rawTitle.match(/^\[([^\]]+)\]/);
-        if (match) {
-            code = match[1];
+        const prefixMatch = rawTitle.match(/^\[([^\]]+)\]/);
+        // Title Code (Suffix) e.g. "CURSO... PRO371R"
+        // Look for typical pattern: 3+ letters, numbers, optional letter at end of string
+        const suffixMatch = rawTitle.match(/\s+([A-Z]{3,}\d+[A-Z]*)$/);
+
+        if (prefixMatch) {
+            code = prefixMatch[1];
             title = rawTitle.replace(/^\[[^\]]+\]/, '').split('|')[0].trim();
+        } else if (suffixMatch) {
+            code = suffixMatch[1];
+            title = rawTitle.replace(suffixMatch[0], '').trim();
         } else {
              // Fallback cleanup if different format
             title = cleanTitle(rawTitle);
