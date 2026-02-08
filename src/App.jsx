@@ -1,15 +1,15 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { Download, Layout, Settings } from 'lucide-react';
-import KPICard from './components/KPICard';
+
 import FilterBar from './components/FilterBar';
 import DataTable from './components/DataTable';
-import { loadData, calculateKPIs } from './utils/dataProcessor';
+import { loadData } from './utils/dataProcessor';
 import { exportToExcel, exportToPDF } from './utils/exportUtils';
 import './App.css';
 
 function App() {
   const [data, setData] = useState([]);
-  const [kpis, setKpis] = useState({ confirmed: 0, closed: 0, finalized: 0 });
+
   const [filters, setFilters] = useState({
     course: '',
     topic: '',
@@ -25,7 +25,7 @@ function App() {
     const fetchData = async () => {
       const processed = await loadData();
       setData(processed);
-      setKpis(calculateKPIs(processed));
+
     };
     fetchData();
   }, []);
@@ -121,12 +121,7 @@ function App() {
           </button>
         </div>
 
-        {/* KPI CARDS */}
-        <section className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-          <KPICard title="Cursos Confirmados" count={kpis.confirmed} type="confirmed" />
-          <KPICard title="Cursos Cerrados" count={kpis.closed} type="closed" />
-          <KPICard title="Cursos Finalizados" count={kpis.finalized} type="finalized" />
-        </section>
+
 
         {/* FILTERS & TOOLBAR */}
         <div className="card p-6 mb-6 bg-white rounded-2xl shadow-sm border border-slate-100">
