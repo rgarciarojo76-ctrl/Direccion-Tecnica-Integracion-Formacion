@@ -89,6 +89,114 @@ export const loadData = async () => {
   }
 };
 
+// Normalization Map for Provinces
+const provinceMap = {
+    "alacant": "Alicante",
+    "alicante": "Alicante",
+    "alacant/alicante": "Alicante",
+    "alacant (alicante)": "Alicante",
+    "alava": "Álava",
+    "araba": "Álava",
+    "araba/alava": "Álava",
+    "araba/álava": "Álava",
+    "asturias": "Asturias",
+    "avila": "Ávila",
+    "badajoz": "Badajoz",
+    "barcelona": "Barcelona",
+    "bizkaia": "Vizcaya",
+    "vizcaya": "Vizcaya",
+    "bizkaia (vizcaya)": "Vizcaya",
+    "burgos": "Burgos",
+    "caceres": "Cáceres",
+    "cadiz": "Cádiz",
+    "cantabria": "Cantabria",
+    "castello": "Castellón",
+    "castellon": "Castellón",
+    "castelló": "Castellón",
+    "castelló/castellón": "Castellón",
+    "castelló (castellón)": "Castellón",
+    "ceuta": "Ceuta",
+    "ciudad real": "Ciudad Real",
+    "cordoba": "Córdoba",
+    "coruña": "A Coruña",
+    "a coruña": "A Coruña",
+    "la coruña": "A Coruña",
+    "a coruña (la coruña)": "A Coruña",
+    "cuenca": "Cuenca",
+    "girona": "Girona",
+    "gerona": "Girona", // Or Girona, let's stick to official or common usage. User screenshot showed "Gerona (Gerona)" - let's normalize to Girona or Gerona? Official is Girona.
+    "gerona (girona)": "Girona",
+    "granada": "Granada",
+    "guadalajara": "Guadalajara",
+    "gipuzkoa": "Guipúzcoa",
+    "guipuzcoa": "Guipúzcoa",
+    "gipuzkoa (guipúzcoa)": "Guipúzcoa",
+    "huelva": "Huelva",
+    "huesca": "Huesca",
+    "illes balears": "Baleares",
+    "baleares": "Baleares",
+    "islas baleares": "Baleares",
+    "jaen": "Jaén",
+    "rioja": "La Rioja",
+    "la rioja": "La Rioja",
+    "las palmas": "Las Palmas",
+    "leon": "León",
+    "lleida": "Lleida",
+    "lerida": "Lleida",
+    "lugo": "Lugo",
+    "madrid": "Madrid",
+    "malaga": "Málaga",
+    "melilla": "Melilla",
+    "murcia": "Murcia",
+    "navarra": "Navarra",
+    "nafarroa": "Navarra",
+    "ourense": "Ourense",
+    "orense": "Ourense",
+    "palencia": "Palencia",
+    "pontevedra": "Pontevedra",
+    "salamanca": "Salamanca",
+    "santa cruz de tenerife": "Santa Cruz de Tenerife",
+    "segovia": "Segovia",
+    "sevilla": "Sevilla",
+    "soria": "Soria",
+    "tarragona": "Tarragona",
+    "teruel": "Teruel",
+    "toledo": "Toledo",
+    "valencia": "Valencia",
+    "valència": "Valencia",
+    "valència/valencia": "Valencia",
+    "valència (valencia)": "Valencia",
+    "valladolid": "Valladolid",
+    "zamora": "Zamora",
+    "zaragoza": "Zaragoza",
+    "albacete": "Albacete",
+    "almeria": "Almería"
+};
+
+const normalizeLocation = (rawLoc) => {
+    if (!rawLoc) return "Desconocida";
+    
+    // Cleanup: remove extra spaces, lowercase for matching
+    const clean = rawLoc.trim().toLowerCase();
+    
+    // Direct map lookup
+    if (provinceMap[clean]) {
+        return provinceMap[clean];
+    }
+
+    // Attempt to match if simplified
+    // Remove parenthesis content for a cleaner check if map fails
+    // e.g. "Alicante (Alacant)" -> "Alicante"
+    const noParens = clean.replace(/\s*\(.*?\)\s*/g, '').trim();
+    if (provinceMap[noParens]) {
+        return provinceMap[noParens];
+    }
+
+    // Default: Return capitalized raw if no match
+    // Capitalize first letter of each word
+    return clean.replace(/\b\w/g, c => c.toUpperCase());
+};
+
 // Common parser since both files seem to share structure now
 const parseRow = (row, source) => {
     // ... (same indices)
@@ -100,7 +208,7 @@ const parseRow = (row, source) => {
     const fechaFinRaw = row[3];
     const modalidad = row[4];
     const duracion = row[5];
-    const ubicacion = row[6];
+    const ubicacionRaw = row[6]; // Raw location
     const plazasTotales = row[7];
     const plazasDisponibles = row[9];
     
@@ -108,8 +216,11 @@ const parseRow = (row, source) => {
     const startDateObj = getJsDate(fechaInicioRaw);
     const endDateObj = getJsDate(fechaFinRaw);
     
-    const fechaInicioStr = formatDate(startDateObj) || fechaInicioRaw; // Fallback to raw if logic fails
+    const fechaInicioStr = formatDate(startDateObj) || fechaInicioRaw;
     const fechaFinStr = formatDate(endDateObj) || fechaFinRaw;
+
+    // Location Normalization
+    const ubicacion = normalizeLocation(ubicacionRaw);
 
     // Title processing
     let code = "N/A";
@@ -143,13 +254,13 @@ const parseRow = (row, source) => {
         tematica: topic,
         modalidad: modalidad || "Presencial",
         fechas: `${fechaInicioStr} - ${fechaFinStr}`,
-        startDate: startDateObj, // Date Object
+        startDate: startDateObj,
         startDatefmt: fechaInicioStr,
-        endDate: endDateObj,   // Date Object
+        endDate: endDateObj,
         endDatefmt: fechaFinStr,
-        startDateRaw: startDateObj, // Keep for sorting compatibility
-        ubicacion: ubicacion || "Desconocida",
-        delegacion: ubicacion || "Central",
+        startDateRaw: startDateObj,
+        ubicacion: ubicacion,
+        delegacion: ubicacion, // Use normalized location for delegation too
         plazas: plazasDisponibles !== undefined ? plazasDisponibles : 0,
         totalPlazas: plazasTotales || 0,
         estado: (plazasDisponibles > 0) ? "CONFIRMADO" : "CERRADO",
