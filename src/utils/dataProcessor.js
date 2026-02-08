@@ -42,16 +42,28 @@ const normalizeTopic = (text) => {
 // DATE UTILS
 const getJsDate = (value) => {
     if (!value) return null;
-    // If number, it's serial (Excel)
+    
+    // If it's already a Date object (thanks to cellDates: true)
+    if (value instanceof Date) {
+        return value;
+    }
+
+    // If string in dd/mm/yyyy format
+    if (typeof value === 'string') {
+        const match = value.match(/^(\d{1,2})\/(\d{1,2})\/(\d{4})$/);
+        if (match) {
+            const [_, d, m, y] = match;
+            return new Date(y, m - 1, d);
+        }
+        // Fallback checks
+        const d = new Date(value);
+        if (!isNaN(d)) return d;
+    }
+
+    // If number (fallback for serial if cellDates missed it for some reason)
     if (typeof value === 'number') {
         const date = new Date((value - 25569) * 86400 * 1000);
-        // Correct timezone offset issues if needed, strictly for date part usually ok
         return date;
-    }
-    // If string in dd/mm/yyyy format
-    if (typeof value === 'string' && value.match(/^\d{1,2}\/\d{1,2}\/\d{4}$/)) {
-        const [d, m, y] = value.split('/');
-        return new Date(y, m - 1, d);
     }
     return null;
 };
@@ -61,6 +73,7 @@ const formatDate = (date) => {
     return date.toLocaleDateString('es-ES', { day: '2-digit', month: '2-digit', year: 'numeric' });
 };
 
+// DATA LOADING
 // DATA LOADING
 export const loadData = async () => {
   try {
@@ -76,17 +89,22 @@ export const loadData = async () => {
     const today = new Date();
     today.setHours(0, 0, 0, 0);
     
-    combined = combined.filter(c => c.startDateRaw && c.startDateRaw >= today);
+    combined = combined.filter(c => {
+        if (!c.startDateRaw) return false;
+        const cDate = new Date(c.startDateRaw);
+        cDate.setHours(0, 0, 0, 0);
+        return cDate >= today;
+    });
 
-    // Sort by Date (Ascending: Soonest first)
+    // Detect Synergies (Before sort logic or irrelevant, but keeping data processing together)
+    combined = detectSynergies(combined);
+
+    // Sort by Date (Ascending: Soonest first) - FINAL STEP
     combined.sort((a, b) => {
         const dateA = a.startDateRaw || new Date(2099, 11, 31);
         const dateB = b.startDateRaw || new Date(2099, 11, 31);
         return dateA - dateB;
     });
-
-    // Detect Synergies
-    combined = detectSynergies(combined);
     
     return combined;
   } catch (error) {
@@ -279,7 +297,8 @@ const fetchAndParseASPY = async () => {
   const buffer = await file.arrayBuffer();
   const wb = read(buffer, { type: 'array' });
   const ws = wb.Sheets[wb.SheetNames[0]];
-  const json = utils.sheet_to_json(ws, { header: 1 }).slice(1);
+  // Enable cellDates to allow library to parse dates
+  const json = utils.sheet_to_json(ws, { header: 1, cellDates: true }).slice(1);
 
   return json.map(row => parseRow(row, 'ASPY')).filter(Boolean);
 };
@@ -289,7 +308,7 @@ const fetchAndParseMAS = async () => {
     const buffer = await file.arrayBuffer();
     const wb = read(buffer, { type: 'array' });
     const ws = wb.Sheets[wb.SheetNames[0]];
-    const json = utils.sheet_to_json(ws, { header: 1 }).slice(1);
+    const json = utils.sheet_to_json(ws, { header: 1, cellDates: true }).slice(1);
 
     return json.map(row => parseRow(row, 'MAS')).filter(Boolean);
 };
