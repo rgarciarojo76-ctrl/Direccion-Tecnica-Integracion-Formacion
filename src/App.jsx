@@ -168,9 +168,9 @@ function App() {
           </div>
           <button 
             onClick={handleExport}
-            className="btn-primary flex items-center gap-2 shadow-lg shadow-blue-500/20"
+            className="btn-primary btn-compact shadow-sm hover:shadow-md"
           >
-            <Download size={18} />
+            <Download size={16} />
             <span>Exportar Informe</span>
           </button>
         </div>

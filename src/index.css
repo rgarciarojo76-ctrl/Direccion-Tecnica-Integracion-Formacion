@@ -273,6 +273,17 @@ button {
   transform: translateY(0);
 }
 
+.btn-compact {
+  padding: 0.4rem 1rem;
+  font-size: 0.875rem;
+  border-radius: 8px;
+  line-height: 1;
+  min-height: 36px;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
 .btn-outline {
   border: 1px solid var(--border-color);
   color: var(--text-secondary);
