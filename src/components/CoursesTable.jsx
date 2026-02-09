@@ -1,5 +1,5 @@
 import React from 'react';
-import { Users } from 'lucide-react';
+import { Users, Search } from 'lucide-react';
 
 const CoursesTable = ({ data }) => {
 
@@ -163,10 +163,10 @@ const CoursesTable = ({ data }) => {
             <tr>
               <td colSpan="10" className="p-16 text-center bg-slate-50 rounded-xl border border-dashed border-slate-300">
                 <div className="mx-auto w-20 h-20 bg-white rounded-full flex items-center justify-center mb-4 shadow-sm border border-slate-100">
-                    <img src="/logos/aspy_logo.png" className="h-8 opacity-20 filter grayscale" />
+                    <Search className="text-slate-300" size={32} />
                 </div>
                 <h3 className="text-slate-600 font-semibold text-lg">No se encontraron cursos activos</h3>
-                <p className="text-slate-400 text-sm mt-2">Prueba a ajustar los filtos de búsqueda para ver más resultados.</p>
+                <p className="text-slate-400 text-sm mt-2">Prueba a ajustar los filtros de búsqueda para ver más resultados.</p>
               </td>
             </tr>
           )}
