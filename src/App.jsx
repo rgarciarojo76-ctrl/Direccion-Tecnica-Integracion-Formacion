@@ -103,15 +103,18 @@ function App() {
                  src="/logos/ia_lab_logo.png" 
                  alt="IA LAB Logo" 
                  className="object-contain"
-                 style={{ height: '45px', width: 'auto' }}
+                 style={{ height: '55px', width: 'auto' }}
                />
             </div>
             
             <div className="flex flex-col justify-center">
-              <h1 className="text-2xl font-bold text-slate-800 leading-none tracking-tight mb-1">
-                DIRECCIÓN TÉCNICA IA LAB
+              <span className="text-xs font-semibold text-slate-500 uppercase tracking-widest leading-none mb-0.5">
+                DIRECCIÓN TÉCNICA
+              </span>
+              <h1 className="text-3xl font-black text-[#009ee3] leading-none tracking-tight mb-1">
+                IA LAB
               </h1>
-              <p className="text-sm text-slate-500 font-medium leading-none">
+              <p className="text-xs text-slate-400 font-medium leading-none">
                 App: Prueba concepto programación de cursos conjunta
               </p>
             </div>
