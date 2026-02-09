@@ -1,7 +1,7 @@
 import React from 'react';
 import { Users } from 'lucide-react';
 
-const DataTable = ({ data }) => {
+const CoursesTable = ({ data }) => {
 
 
   const getLogo = (source) => {
@@ -137,4 +137,4 @@ const DataTable = ({ data }) => {
   );
 };
 
-export default DataTable;
+export default CoursesTable;

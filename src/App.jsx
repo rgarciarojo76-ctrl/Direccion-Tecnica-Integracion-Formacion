@@ -2,7 +2,7 @@ import React, { useState, useEffect, useMemo } from 'react';
 import { Download, Layout, Settings } from 'lucide-react';
 
 import FilterBar from './components/FilterBar';
-import DataTable from './components/DataTable';
+import CoursesTable from './components/CoursesTable';
 import { loadData } from './utils/dataProcessor';
 import { exportToExcel, exportToPDF } from './utils/exportUtils';
 import './App.css';
@@ -142,7 +142,7 @@ function App() {
 
         {/* DATA TABLE */}
         <div className="mt-6">
-          <DataTable data={filteredData} />
+          <CoursesTable data={filteredData} />
         </div>
 
       </main>
