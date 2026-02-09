@@ -16,7 +16,9 @@ function App() {
   const [filters, setFilters] = useState({
     search: '',
     startDate: '',
-    endDate: ''
+    endDate: '',
+    location: '',
+    company: 'ALL'
   });
 
   // Unique Values for "Tabulated" filters
