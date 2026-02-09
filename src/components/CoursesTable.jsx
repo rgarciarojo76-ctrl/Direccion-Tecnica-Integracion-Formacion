@@ -23,7 +23,7 @@ const CoursesTable = ({ data }) => {
                   src={getLogo(row.source)} 
                   alt={row.source} 
                   className={`object-contain mix-blend-multiply ${
-                    row.source === 'MAS' ? 'h-4 w-auto scale-90' : 'h-full w-full'
+                    row.source === 'MAS' ? 'h-auto w-1/2' : 'h-full w-full'
                   }`}
                />
              </div>
