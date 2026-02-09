@@ -39,11 +39,24 @@ const normalizeTopic = (text) => {
 
 // DATE UTILS
 const getJsDate = (value) => {
-    if (!value) return null;
+    if (value === undefined || value === null) return null;
     
-    // If it's already a Date object (thanks to cellDates: true)
+    // If it's already a Date object
     if (value instanceof Date) {
         return value;
+    }
+
+    // If number (Excel serial date)
+    // Excel base date is Dec 30, 1899 (for PC) or Jan 1, 1904 (for Mac). 
+    // Usually 25569 is the offset for 1970-01-01.
+    if (typeof value === 'number') {
+        // Basic check for reasonable date range (e.g. > 10000)
+        if (value > 10000) {
+           const date = new Date((value - 25569) * 86400 * 1000);
+           // Adjust for timezone offset if needed, but usually UTC is safer for day precision
+           return date; 
+        }
+        return null;
     }
 
     // If string in dd/mm/yyyy format
@@ -56,12 +69,6 @@ const getJsDate = (value) => {
         // Fallback checks
         const d = new Date(value);
         if (!isNaN(d)) return d;
-    }
-
-    // If number (fallback for serial if cellDates missed it for some reason)
-    if (typeof value === 'number') {
-        const date = new Date((value - 25569) * 86400 * 1000);
-        return date;
     }
     return null;
 };
