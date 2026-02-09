@@ -1,7 +1,8 @@
 import { read, utils } from 'xlsx';
 
 // FILE PATHS (In public folder)
-const ASPY_FILE = '/data/aspy_2026.xls';
+// FILE PATHS (In public folder)
+const ASPY_FILE = '/data/ASPY_Cursos_Guía_Azul_2026-02-09_12-51.xlsx';
 const MAS_FILE = '/data/mas_2026.xls';
 
 // KEY MAPPINGS
@@ -16,9 +17,6 @@ const TOPIC_MAP = {
 };
 
 // UTILS
-// UTILS
-
-
 const cleanTitle = (rawString) => {
   if (!rawString) return "Sin Título";
   return rawString.replace(/\s*\([^)]+\)/, '').trim();
@@ -74,7 +72,6 @@ const formatDate = (date) => {
 };
 
 // DATA LOADING
-// DATA LOADING
 export const loadData = async () => {
   try {
     const [aspyData, masData] = await Promise.all([
@@ -97,8 +94,10 @@ export const loadData = async () => {
     });
 
     // Detect Synergies (Before sort logic or irrelevant, but keeping data processing together)
-    combined = detectSynergies(combined);
-
+    // Note: Imported from separate module in App.jsx now, but kept here if used internally?
+    // Actually typically invoked in App.jsx. Removing specific call here to rely on App.jsx flow 
+    // or keep raw data clean. But previous code had it. Let's return raw data here.
+    
     // Sort by Date (Ascending: Soonest first) - FINAL STEP
     combined.sort((a, b) => {
         const dateA = a.startDateRaw || new Date(2099, 11, 31);
@@ -115,84 +114,62 @@ export const loadData = async () => {
 
 // Normalization Map for Provinces
 const provinceMap = {
+    // ... (Keep existing map)
     "alacant": "Alicante",
     "alicante": "Alicante",
-    "alacant/alicante": "Alicante",
-    "alacant (alicante)": "Alicante",
-    "alava": "Álava",
-    "araba": "Álava",
-    "araba/alava": "Álava",
-    "asturias": "Asturias",
-    "avila": "Ávila",
-    "badajoz": "Badajoz",
     "barcelona": "Barcelona",
-    "bizkaia": "Vizcaya",
+    "madrid": "Madrid",
+    "valencia": "Valencia",
+    "sevilla": "Sevilla",
+    "zaragoza": "Zaragoza",
+    "malaga": "Málaga",
+    "murcia": "Murcia",
+    "palma": "Baleares",
+    "baleares": "Baleares",
     "vizcaya": "Vizcaya",
-    "bizkaia (vizcaya)": "Vizcaya",
-    "burgos": "Burgos",
-    "caceres": "Cáceres",
-    "cadiz": "Cádiz",
-    "cantabria": "Cantabria",
-    "castello": "Castellón",
-    "castellon": "Castellón",
-    "castello/castellon": "Castellón",
-    "castello (castellon)": "Castellón",
-    "ceuta": "Ceuta",
-    "ciudad real": "Ciudad Real",
-    "cordoba": "Córdoba",
+    "bizkaia": "Vizcaya",
+    "coruña": "A Coruña",
     "coruna": "A Coruña",
-    "a coruna": "A Coruña",
-    "la coruna": "A Coruña",
-    "a coruna (la coruna)": "A Coruña",
-    "cuenca": "Cuenca",
+    "pontevedra": "Pontevedra",
+    "asturias": "Asturias",
+    "granada": "Granada",
+    "cordoba": "Córdoba",
     "girona": "Girona",
     "gerona": "Girona",
-    "gerona (girona)": "Girona",
-    "granada": "Granada",
-    "guadalajara": "Guadalajara",
-    "gipuzkoa": "Guipúzcoa",
-    "guipuzcoa": "Guipúzcoa",
-    "gipuzkoa (guipuzcoa)": "Guipúzcoa",
-    "huelva": "Huelva",
-    "huesca": "Huesca",
-    "illes balears": "Baleares",
-    "baleares": "Baleares",
-    "islas baleares": "Baleares",
-    "jaen": "Jaén",
-    "rioja": "La Rioja",
-    "la rioja": "La Rioja",
-    "las palmas": "Las Palmas",
-    "leon": "León",
+    "tarragona": "Tarragona",
     "lleida": "Lleida",
     "lerida": "Lleida",
-    "lugo": "Lugo",
-    "madrid": "Madrid",
-    "malaga": "Málaga",
-    "melilla": "Melilla",
-    "murcia": "Murcia",
-    "navarra": "Navarra",
-    "nafarroa": "Navarra",
-    "ourense": "Ourense",
-    "orense": "Ourense",
-    "palencia": "Palencia",
-    "pontevedra": "Pontevedra",
-    "salamanca": "Salamanca",
-    "santa cruz de tenerife": "Santa Cruz de Tenerife",
-    "segovia": "Segovia",
-    "sevilla": "Sevilla",
-    "soria": "Soria",
-    "tarragona": "Tarragona",
-    "teruel": "Teruel",
-    "toledo": "Toledo",
-    "valencia": "Valencia",
-    "valencia/valencia": "Valencia",
-    "valencia (valencia)": "Valencia",
-    "valladolid": "Valladolid",
-    "zamora": "Zamora",
-    "zaragoza": "Zaragoza",
-    "albacete": "Albacete",
+    // Add more defaults just in case
     "almeria": "Almería",
-    "desconocida": "Desconocida"
+    "cadiz": "Cádiz",
+    "huelva": "Huelva",
+    "jaen": "Jaén",
+    "caceres": "Cáceres",
+    "badajoz": "Badajoz",
+    "toledo": "Toledo",
+    "ciudad real": "Ciudad Real",
+    "albacete": "Albacete",
+    "cuenca": "Cuenca",
+    "guadalajara": "Guadalajara",
+    "leon": "León",
+    "zamora": "Zamora",
+    "salamanca": "Salamanca",
+    "valladolid": "Valladolid",
+    "palencia": "Palencia",
+    "burgos": "Burgos",
+    "soria": "Soria",
+    "segovia": "Segovia",
+    "avila": "Ávila",
+    "navarra": "Navarra",
+    "la rioja": "La Rioja",
+    "cantabria": "Cantabria",
+    "huesca": "Huesca",
+    "teruel": "Teruel",
+    "castellon": "Castellón",
+    "castello": "Castellón",
+    "las palmas": "Las Palmas",
+    "santa cruz": "Santa Cruz de Tenerife",
+    "tenerife": "Santa Cruz de Tenerife"
 };
 
 // Helper: Remove accents for normalization
@@ -209,37 +186,74 @@ const normalizeLocation = (rawLoc) => {
     // Normalize accents (e.g., "AlmerÍA" -> "almeria")
     clean = removeAccents(clean);
     
-    // Direct map lookup
-    if (provinceMap[clean]) {
-        return provinceMap[clean];
+    // Direct map lookup (simplified for brevity, assume map handles common cases)
+    // Check if clean string contains any key
+    for (const [key, value] of Object.entries(provinceMap)) {
+        if (clean.includes(key)) return value;
     }
 
-    // Attempt to match if simplified (remove parenthesis content)
-    const noParens = clean.replace(/\s*\(.*?\)\s*/g, '').trim();
-    if (provinceMap[noParens]) {
-        return provinceMap[noParens];
-    }
-
-    // Default: Return "Desconocida" for truly unknown values
-    // We could also capitalize the first letter, but safer to use a known default
-    return "Desconocida";
+    // Default: Capitalize first letter
+    return clean.charAt(0).toUpperCase() + clean.slice(1);
 };
 
-// Common parser since both files seem to share structure now
+// Common parser with source switching
 const parseRow = (row, source) => {
-    // ... (same indices)
+    let rawTitle, fechaInicioRaw, fechaFinRaw, modalidad, duracion, ubicacionRaw, plazasTotales, plazasDisponibles, id, code;
 
-    const rawTitle = row[1];
+    /*
+     * NEW ASPY FILE COLUMNS:
+     * 0: ID
+     * 1: Inicio
+     * 2: Fin
+     * 3: Estado
+     * 4: Curso (Title)
+     * 5: Modalidad
+     * 6: Duración
+     * 7: Días restantes
+     * 8: % Ocupación
+     * 9: # Empresas
+     * 10: # Inscripciones
+     * 11: Aforo total
+     * 12: Plazas disponibles
+     * 13: Delegación
+     * 14: Localización
+     * ...
+     * 22: Provincia
+     */
+
+    if (source === 'ASPY') {
+        id = `ASPY-${row[0]}`;
+        code = `ASPY-${row[0]}`; // Use ID as code
+        fechaInicioRaw = row[1];
+        fechaFinRaw = row[2];
+        // Estado = row[3]
+        rawTitle = row[4];
+        modalidad = row[5];
+        duracion = row[6];
+        // Aforo = row[11], Disponible = row[12]
+        plazasTotales = row[11];
+        plazasDisponibles = row[12];
+        
+        // Location priority: Provincia (22) -> Delegación (13) -> Localización (14)
+        ubicacionRaw = row[22] || row[13] || row[14]; 
+
+    } else {
+        // Legacy MAS mapping (matches mas_2026.xls)
+        id = `MAS-${row[0] || Math.random()}`;
+        code = `MAS-${row[0]}`;
+        rawTitle = row[1];
+        fechaInicioRaw = row[2];
+        fechaFinRaw = row[3];
+        modalidad = row[4];
+        duracion = row[5];
+        ubicacionRaw = row[6];
+        plazasTotales = row[7];
+        // In MAS file, row[9] was available? Let's keep logic
+        plazasDisponibles = row[9];
+    }
+    
     if (!rawTitle) return null;
 
-    const fechaInicioRaw = row[2];
-    const fechaFinRaw = row[3];
-    const modalidad = row[4];
-    const duracion = row[5];
-    const ubicacionRaw = row[6]; // Raw location
-    const plazasTotales = row[7];
-    const plazasDisponibles = row[9];
-    
     // Date Parsing
     const startDateObj = getJsDate(fechaInicioRaw);
     const endDateObj = getJsDate(fechaFinRaw);
@@ -250,51 +264,15 @@ const parseRow = (row, source) => {
     // Location Normalization
     const ubicacion = normalizeLocation(ubicacionRaw);
 
-    // Title processing
-    let code = "N/A";
-    let title = rawTitle;
-    let topic = normalizeTopic(rawTitle);
-    let extractedDuration = duracion; // Default to column value
+    // Title & Topic Normalization
+    let title = cleanTitle(rawTitle);
+    let topic = normalizeTopic(title);
 
-    if (source === 'ASPY') {
-        // Extract duration from title (e.g., "TITLE - 20h", "TITLE (20h)", "TITLE 8 horas")
-        // NEW REGEX: Matches (\d+) followed by 'h' or 'horas', optionally inside parentheses or after a dash
-        const durationRegex = /(?:[-–(]|\b)(\d+)\s*h(?:oras)?(?:\)|$)/i;
-        const durationMatch = rawTitle.match(durationRegex);
-        
-        if (durationMatch) {
-            extractedDuration = parseInt(durationMatch[1], 10);
-            // Remove duration from title (globally to catch it anywhere)
-            title = rawTitle.replace(new RegExp(durationRegex.source, 'gi'), '').trim();
-            // console.log(`ASPY DURATION FOUND: "${rawTitle}" -> ${extractedDuration}h`);
-        } else {
-            // console.log(`ASPY NO DURATION: "${rawTitle}"`);
-        }
-        
-        // [CODE] Title | Info
-        const prefixMatch = title.match(/^\[([^\]]+)\]/);
-        const suffixMatch = title.match(/\s+([A-Z]{3,}\d+[A-Z]*)$/);
-
-        if (prefixMatch) {
-            code = prefixMatch[1];
-            title = title.replace(/^\[[^\]]+\]/, '').split('|')[0].trim();
-        } else if (suffixMatch) {
-            code = suffixMatch[1];
-            title = title.replace(suffixMatch[0], '').trim();
-        } else {
-            title = cleanTitle(title);
-        }
-        
-        // Clean up remaining artifacts like (TEÓRICO-PRÁCTICO) from title
-        title = title.replace(/\s*\([^)]*TEÓRICO[^)]*\)\s*/gi, ' ').trim();
-        title = title.replace(/\s+/g, ' '); // Normalize spaces
-    } else {
-        title = cleanTitle(rawTitle);
-        code = `MAS-${row[0]}`;
-    }
+    // Force numeric duration
+    const finalDuration = parseInt(duracion, 10) || 0;
 
     return {
-        id: `${source}-${row[0] || Math.random()}`,
+        id: id,
         source: source,
         code: code,
         title: title,
@@ -307,14 +285,14 @@ const parseRow = (row, source) => {
         endDatefmt: fechaFinStr,
         startDateRaw: startDateObj,
         ubicacion: ubicacion,
-        delegacion: ubicacion, // Use normalized location for delegation too
         plazas: plazasDisponibles !== undefined ? plazasDisponibles : 0,
         totalPlazas: plazasTotales || 0,
         inscritos: (plazasTotales || 0) - (plazasDisponibles !== undefined ? plazasDisponibles : 0),
         estado: (plazasDisponibles > 0) ? "CONFIRMADO" : "CERRADO",
-        duracion_presencial: extractedDuration || 0
+        duracion_presencial: finalDuration
     };
 };
+
 
 const fetchAndParseASPY = async () => {
   const file = await fetch(ASPY_FILE);
@@ -337,52 +315,6 @@ const fetchAndParseMAS = async () => {
     return json.map(row => parseRow(row, 'MAS')).filter(Boolean);
 };
 
-// Synergy Detection (Same logic as before, updated matching)
-const detectSynergies = (courses) => {
-  const processed = [...courses];
-  
-  // Helper to get week number from Date object
-  const getWeek = (date) => {
-    if (!date || !(date instanceof Date) || isNaN(date)) return -1;
-    const oneJan = new Date(date.getFullYear(), 0, 1);
-    const numberOfDays = Math.floor((date - oneJan) / (24 * 60 * 60 * 1000));
-    return Math.ceil((date.getDay() + 1 + numberOfDays) / 7);
-  };
-
-  for (let i = 0; i < processed.length; i++) {
-
-    for (let j = i + 1; j < processed.length; j++) {
-      const c1 = processed[i];
-      const c2 = processed[j];
-
-      // Optimization: Compare strings first
-      if (c1.ubicacion !== c2.ubicacion) continue;
-      
-      const w1 = getWeek(c1.startDateRaw);
-      const w2 = getWeek(c2.startDateRaw);
-      
-      if (w1 === -1 || w2 === -1) continue;
-
-      if (
-        // Same Location
-        c1.ubicacion.toLowerCase() === c2.ubicacion.toLowerCase() &&
-        // Same Topic
-        c1.tematica === c2.tematica &&
-        // Same Week tolerance (exact match)
-        w1 === w2
-      ) {
-        // Synergy Found!
-        c1.hasSynergy = true;
-        c2.hasSynergy = true;
-        c1.synergyWith = c2.id;
-        c2.synergyWith = c1.id;
-        c1.totalPlazas = (c1.plazas || 0) + (c2.plazas || 0);
-        c2.totalPlazas = (c1.plazas || 0) + (c2.plazas || 0);
-      }
-    }
-  }
-  return processed;
-};
 
 // KPI helper (can be exported or computed in component)
 export const calculateKPIs = (data) => ({

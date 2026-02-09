@@ -3,7 +3,7 @@ import { Download, Layout, Settings } from 'lucide-react';
 
 import FilterBar from './components/FilterBar';
 import CoursesTable from './components/CoursesTable';
-import { loadData, calculateKPIs } from './utils/dataProcessor';
+import { loadData } from './utils/dataProcessor';
 import { processCourseListWithGroups } from './utils/synergyEngine'; // Import engine
 import { exportToExcel, exportToPDF } from './utils/exportUtils';
 import './App.css';
