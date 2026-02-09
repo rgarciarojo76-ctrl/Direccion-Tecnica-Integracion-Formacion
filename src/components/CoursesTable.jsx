@@ -18,12 +18,12 @@ const CoursesTable = ({ data }) => {
         <tr className={`course-row ${cardClass}`}>
           {/* Organizadora */}
           <td className="p-2 text-center align-middle border-none">
-             <div className="h-6 w-12 flex items-center justify-center mx-auto bg-white/50 rounded p-1 border border-slate-200/50">
+             <div className="h-10 w-20 flex items-center justify-center mx-auto bg-white/50 rounded p-1 border border-slate-200/50">
                <img 
                   src={getLogo(row.source)} 
                   alt={row.source} 
-                  className="h-4 w-auto object-contain"
-                  style={{ maxWidth: '40px', maxHeight: '16px' }}
+                  className="h-8 w-auto object-contain"
+                  style={{ maxWidth: '80px', maxHeight: '32px' }}
                />
              </div>
           </td>

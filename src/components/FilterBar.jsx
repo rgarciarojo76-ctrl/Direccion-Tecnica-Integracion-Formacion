@@ -1,16 +1,5 @@
 import React from 'react';
-import { Search, MapPin, Calendar } from 'lucide-react';
-
-const InputWrapper = ({ icon: Icon, children }) => (
-  <div className="relative group flex-1 min-w-[200px]">
-    <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-      <Icon size={16} className="text-slate-400 group-focus-within:text-blue-500 transition-colors" />
-    </div>
-    {children}
-  </div>
-);
-
-const inputClass = "w-full pl-10 pr-4 py-2 bg-slate-50 border border-slate-200 rounded-lg text-sm text-slate-700 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all hover:bg-white";
+import { Search, MapPin, Calendar, Sparkles, Building2 } from 'lucide-react';
 
 const FilterBar = ({ filters, onFilterChange, uniqueTitles = [], uniqueLocations = [] }) => {
   const handleChange = (e) => {
@@ -19,95 +8,129 @@ const FilterBar = ({ filters, onFilterChange, uniqueTitles = [], uniqueLocations
   };
 
   return (
-    <div className="flex flex-wrap items-center gap-4 w-full">
+    <div className="filter-bar-container">
       
-      {/* Company Tabs */}
-      <div className="tabs-container">
-          {['ALL', 'ASPY', 'MAS'].map((val) => (
-             <button
-               key={val}
-               className={`tab-btn ${filters.company === val ? 'active' : ''}`}
-               onClick={() => onFilterChange('company', val)}
-             >
-               {val === 'ALL' ? 'TODOS' : val}
-             </button>
-          ))}
+      {/* Row 1: Quick Filters */}
+      <div className="filter-row filter-row-primary">
+        
+        {/* Company Tabs */}
+        <div className="filter-group">
+          <label className="filter-label">
+            <Building2 size={14} />
+            Empresa
+          </label>
+          <div className="tabs-container-pro">
+            {['ALL', 'ASPY', 'MAS'].map((val) => (
+               <button
+                 key={val}
+                 className={`tab-btn-pro ${filters.company === val ? 'active' : ''} ${val === 'ASPY' ? 'aspy' : val === 'MAS' ? 'mas' : ''}`}
+                 onClick={() => onFilterChange('company', val)}
+               >
+                 {val === 'ALL' ? 'Todos' : val}
+               </button>
+            ))}
+          </div>
+        </div>
+
+        {/* Synergies Toggle */}
+        <div className="filter-group">
+          <label className="filter-label">
+            <Sparkles size={14} />
+            Vista
+          </label>
+          <label className={`toggle-wrapper-pro ${filters.showSynergiesOnly ? 'active' : ''}`}>
+            <input 
+              type="checkbox" 
+              checked={filters.showSynergiesOnly}
+              onChange={(e) => onFilterChange('showSynergiesOnly', e.target.checked)}
+              className="toggle-input-pro"
+            />
+            <span className="toggle-slider-pro"></span>
+            <span className="toggle-text-pro">Solo sinergias</span>
+          </label>
+        </div>
+
       </div>
 
-      {/* Synergies Toggle */}
-      <label className={`toggle-wrapper ${filters.showSynergiesOnly ? 'active' : ''}`}>
-        <input 
-          type="checkbox" 
-          checked={filters.showSynergiesOnly}
-          onChange={(e) => onFilterChange('showSynergiesOnly', e.target.checked)}
-          className="toggle-input"
-        />
-        <span className="toggle-label">Solo sinergias</span>
-      </label>
-
-      {/* Search Course (Tabulated/Normalized) */}
-      <InputWrapper icon={Search}>
-        <input
-          type="text"
-          name="course"
-          list="course-options"
-          placeholder="Seleccionar curso..."
-          value={filters.course}
-          onChange={handleChange}
-          className={inputClass}
-          autoComplete="off"
-        />
-        <datalist id="course-options">
-            {uniqueTitles.map((title, idx) => (
+      {/* Row 2: Search Filters */}
+      <div className="filter-row filter-row-secondary">
+        
+        {/* Course Search */}
+        <div className="filter-group filter-group-grow">
+          <label className="filter-label">
+            <Search size={14} />
+            Buscar curso
+          </label>
+          <div className="input-wrapper-pro">
+            <input
+              type="text"
+              name="course"
+              list="course-options"
+              placeholder="Nombre del curso..."
+              value={filters.course}
+              onChange={handleChange}
+              className="input-pro"
+              autoComplete="off"
+            />
+            <datalist id="course-options">
+              {uniqueTitles.map((title, idx) => (
                 <option key={idx} value={title} />
-            ))}
-        </datalist>
-      </InputWrapper>
+              ))}
+            </datalist>
+          </div>
+        </div>
 
-      {/* Date Range (Calendar) */}
-       <div className="flex items-center gap-2 flex-none">
-          <InputWrapper icon={Calendar}>
-             <input
-                type="date"
-                name="startDate"
-                placeholder="Fecha Inicio"
-                value={filters.startDate}
-                onChange={handleChange}
-                className={`${inputClass} pl-10`} 
+        {/* Date Range */}
+        <div className="filter-group">
+          <label className="filter-label">
+            <Calendar size={14} />
+            Rango de fechas
+          </label>
+          <div className="date-range-pro">
+            <input
+              type="date"
+              name="startDate"
+              value={filters.startDate}
+              onChange={handleChange}
+              className="input-pro input-date"
             />
-          </InputWrapper>
-          <span className="text-slate-300">-</span>
-          <InputWrapper icon={Calendar}>
-             <input
-                type="date"
-                name="endDate"
-                placeholder="Fecha Fin"
-                value={filters.endDate}
-                onChange={handleChange}
-                 className={`${inputClass} pl-10`}
+            <span className="date-separator">→</span>
+            <input
+              type="date"
+              name="endDate"
+              value={filters.endDate}
+              onChange={handleChange}
+              className="input-pro input-date"
             />
-          </InputWrapper>
-       </div>
+          </div>
+        </div>
 
-      {/* Location Filter (Tabulated/Normalized) */}
-      <InputWrapper icon={MapPin}>
-        <input
-          type="text"
-          name="location"
-          list="location-options"
-          placeholder="Ciudad / Provincia"
-          value={filters.location}
-          onChange={handleChange}
-          className={inputClass}
-          autoComplete="off"
-        />
-         <datalist id="location-options">
-            {uniqueLocations.map((loc, idx) => (
+        {/* Location */}
+        <div className="filter-group">
+          <label className="filter-label">
+            <MapPin size={14} />
+            Ubicación
+          </label>
+          <div className="input-wrapper-pro">
+            <input
+              type="text"
+              name="location"
+              list="location-options"
+              placeholder="Ciudad / Provincia"
+              value={filters.location}
+              onChange={handleChange}
+              className="input-pro"
+              autoComplete="off"
+            />
+            <datalist id="location-options">
+              {uniqueLocations.map((loc, idx) => (
                 <option key={idx} value={loc} />
-            ))}
-        </datalist>
-      </InputWrapper>
+              ))}
+            </datalist>
+          </div>
+        </div>
 
+      </div>
     </div>
   );
 };
