@@ -456,6 +456,14 @@ textarea:focus {
 }
 
 /* Individual Course Card Styles */
+.course-row {
+  display: flex;
+  align-items: center;
+  margin: 0.5rem 0;
+  border-radius: 12px;
+  overflow: hidden;
+}
+
 .course-card-aspy {
   background-color: #e0f7ff; /* Soft sky blue */
   border-left: 4px solid #009ee3; /* ASPY corporate blue */
