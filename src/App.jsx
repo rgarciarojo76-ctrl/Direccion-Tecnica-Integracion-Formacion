@@ -97,25 +97,20 @@ function App() {
       <header className="main-header">
         <div className="header-content max-w-7xl mx-auto px-6">
           <div className="header-left flex items-center gap-6">
-            {/* IA LAB Logo */}
-            <div className="logo-container">
+            {/* IA LAB Logo (Full) */}
+            <div className="logo-container flex flex-col justify-center">
                <img 
                  src="/logos/ia_lab_logo.png" 
-                 alt="IA LAB Logo" 
+                 alt="DIRECCIÓN TÉCNICA IA LAB" 
                  className="object-contain"
-                 style={{ height: '55px', width: 'auto' }}
+                 style={{ height: '65px', width: 'auto' }}
                />
             </div>
             
-            <div className="flex flex-col justify-center">
-              <span className="text-xs font-semibold text-slate-500 uppercase tracking-widest leading-none mb-0.5">
-                DIRECCIÓN TÉCNICA
-              </span>
-              <h1 className="text-3xl font-black text-[#009ee3] leading-none tracking-tight mb-1">
-                IA LAB
-              </h1>
+            {/* App Description (moved to right or kept subtle) */}
+            <div className="flex flex-col justify-center border-l border-slate-200 pl-6 h-10">
               <p className="text-xs text-slate-400 font-medium leading-none">
-                App: Prueba concepto programación de cursos conjunta
+                App: Prueba concepto<br/>programación de cursos conjunta
               </p>
             </div>
           </div>
