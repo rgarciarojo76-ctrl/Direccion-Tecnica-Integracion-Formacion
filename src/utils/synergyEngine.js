@@ -11,6 +11,8 @@
  * 5. ASPY course has available slots.
  */
 
+console.log("Synergy Engine v0.8.0 Loaded - Strict Keywords Active");
+
 const KEYWORD_MAP = {
     // Carretillas (Forklifts)
     'carretilla': 'carretilla',
