@@ -32,7 +32,7 @@ const DataTable = ({ data }) => {
             >
               {/* Organizadora - Strict Logo Sizing */}
               <td className="p-3 text-center rounded-l-lg border-l border-y border-slate-100 group-hover:border-blue-200">
-                 <div className="h-10 w-24 flex items-center justify-center mx-auto bg-slate-50 rounded-md p-1">
+                 <div className="h-8 w-24 flex items-center justify-center mx-auto bg-slate-50 rounded-md p-1">
                    <img 
                       src={getLogo(row.source)} 
                       alt={row.source} 
