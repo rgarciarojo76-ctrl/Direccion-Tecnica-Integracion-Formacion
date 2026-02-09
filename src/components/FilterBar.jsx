@@ -42,7 +42,7 @@ const FilterBar = ({ filters, onFilterChange, uniqueTitles = [], uniqueLocations
           onChange={(e) => onFilterChange('showSynergiesOnly', e.target.checked)}
           className="toggle-input"
         />
-        <span className="toggle-label">Solo Sinergias ✨</span>
+        <span className="toggle-label">Solo sinergias</span>
       </label>
 
       {/* Search Course (Tabulated/Normalized) */}
