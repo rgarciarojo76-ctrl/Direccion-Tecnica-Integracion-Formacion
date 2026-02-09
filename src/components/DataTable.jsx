@@ -29,14 +29,21 @@ const DataTable = ({ data }) => {
             <tr 
               key={row.id} 
               className="bg-white hover:bg-slate-50 shadow-sm hover:shadow-md transition-all duration-200 group relative rounded-lg border border-transparent hover:border-blue-100"
+              style={{
+                borderLeftWidth: '4px',
+                borderLeftColor: row.source === 'ASPY' ? '#009ee3' : '#7c3aed',
+                borderLeftStyle: 'solid'
+              }}
             >
               {/* Organizadora - Strict Logo Sizing */}
-              <td className="p-3 text-center rounded-l-lg border-l border-y border-slate-100 group-hover:border-blue-200">
-                 <div className="h-8 w-24 flex items-center justify-center mx-auto bg-slate-50 rounded-md p-1">
+              <td className="p-3 text-center rounded-l-lg border-y border-slate-100 group-hover:border-blue-200">
+                 <div className="h-6 w-20 flex items-center justify-center mx-auto bg-slate-50 rounded-md p-1">
                    <img 
                       src={getLogo(row.source)} 
                       alt={row.source} 
-                      className="h-full w-full object-contain mix-blend-multiply opacity-90 group-hover:opacity-100 transition-opacity" 
+                      className={`w-full object-contain mix-blend-multiply opacity-90 group-hover:opacity-100 transition-opacity ${
+                        row.source === 'MAS' ? 'max-h-4' : 'h-full'
+                      }`}
                    />
                  </div>
               </td>
