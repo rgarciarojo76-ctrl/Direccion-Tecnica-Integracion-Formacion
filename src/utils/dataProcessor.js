@@ -254,21 +254,34 @@ const parseRow = (row, source) => {
     let code = "N/A";
     let title = rawTitle;
     let topic = normalizeTopic(rawTitle);
+    let extractedDuration = duracion; // Default to column value
 
     if (source === 'ASPY') {
+        // Extract duration from title if present (e.g., "TITLE - 20h" or "TITLE (TEÓRICO-PRÁCTICO) - 8 horas")
+        const durationMatch = rawTitle.match(/[-–]\s*(\d+)\s*h(?:oras)?/i);
+        if (durationMatch) {
+            extractedDuration = parseInt(durationMatch[1], 10);
+            // Remove duration from title
+            title = rawTitle.replace(/[-–]\s*\d+\s*h(?:oras)?/i, '').trim();
+        }
+        
         // [CODE] Title | Info
-        const prefixMatch = rawTitle.match(/^\[([^\]]+)\]/);
-        const suffixMatch = rawTitle.match(/\s+([A-Z]{3,}\d+[A-Z]*)$/);
+        const prefixMatch = title.match(/^\[([^\]]+)\]/);
+        const suffixMatch = title.match(/\s+([A-Z]{3,}\d+[A-Z]*)$/);
 
         if (prefixMatch) {
             code = prefixMatch[1];
-            title = rawTitle.replace(/^\[[^\]]+\]/, '').split('|')[0].trim();
+            title = title.replace(/^\[[^\]]+\]/, '').split('|')[0].trim();
         } else if (suffixMatch) {
             code = suffixMatch[1];
-            title = rawTitle.replace(suffixMatch[0], '').trim();
+            title = title.replace(suffixMatch[0], '').trim();
         } else {
-            title = cleanTitle(rawTitle);
+            title = cleanTitle(title);
         }
+        
+        // Clean up remaining artifacts like (TEÓRICO-PRÁCTICO) from title
+        title = title.replace(/\s*\([^)]*TEÓRICO[^)]*\)\s*/gi, ' ').trim();
+        title = title.replace(/\s+/g, ' '); // Normalize spaces
     } else {
         title = cleanTitle(rawTitle);
         code = `MAS-${row[0]}`;
@@ -292,7 +305,7 @@ const parseRow = (row, source) => {
         plazas: plazasDisponibles !== undefined ? plazasDisponibles : 0,
         totalPlazas: plazasTotales || 0,
         estado: (plazasDisponibles > 0) ? "CONFIRMADO" : "CERRADO",
-        duracion_presencial: duracion || 0
+        duracion_presencial: extractedDuration || 0
     };
 };
 
