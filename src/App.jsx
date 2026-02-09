@@ -87,10 +87,19 @@ function App() {
             <div className="logo-container">
                <img 
                  src="/logos/ia_lab_logo.png" 
-                 alt="Dirección Técnica IA LAB - Gestión de Formación" 
+                 alt="IA LAB Logo" 
                  className="object-contain"
                  style={{ height: '40px', width: 'auto' }}
                />
+            </div>
+            
+            <div className="flex flex-col">
+              <h1 className="text-xl font-bold text-[#009ee3] leading-none tracking-tight">
+                DIRECCIÓN TÉCNICA IA LAB
+              </h1>
+              <p className="text-sm text-slate-500 font-medium">
+                Prueba concepto programación de cursos conjunta
+              </p>
             </div>
           </div>
 
