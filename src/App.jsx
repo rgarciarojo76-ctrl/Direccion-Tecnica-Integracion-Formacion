@@ -143,7 +143,7 @@ function App() {
         </div>
 
         {/* DATA TABLE */}
-        <div className="card bg-white rounded-2xl shadow-sm border border-slate-100 overflow-hidden">
+        <div className="mt-6">
           <DataTable data={filteredData} />
         </div>
 
