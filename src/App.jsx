@@ -85,7 +85,16 @@ function App() {
   }, []);
 
   const handleFilterChange = (name, value) => {
-    setFilters(prev => ({ ...prev, [name]: value }));
+    setFilters(prev => {
+        const next = { ...prev, [name]: value };
+        
+        // AUTO-ENABLE SYNERGY MODE: When a location is selected, default to showing only synergies
+        if (name === 'location' && value && value.trim() !== '') {
+            next.showSynergiesOnly = true;
+        }
+        
+        return next;
+    });
   };
 
   const handleExport = () => {
