@@ -1,8 +1,8 @@
 {
   "name": "celestial-magnetar",
   "private": true,
-  "version": "0.3.4",
-  "buildTimestamp": "2026-02-09T13:35:00Z",
+  "version": "0.3.5",
+  "buildTimestamp": "2026-02-09T13:45:00Z",
   "type": "module",
   "scripts": {
     "dev": "vite",
