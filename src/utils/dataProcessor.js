@@ -122,7 +122,6 @@ const provinceMap = {
     "alava": "Álava",
     "araba": "Álava",
     "araba/alava": "Álava",
-    "araba/álava": "Álava",
     "asturias": "Asturias",
     "avila": "Ávila",
     "badajoz": "Badajoz",
@@ -136,25 +135,24 @@ const provinceMap = {
     "cantabria": "Cantabria",
     "castello": "Castellón",
     "castellon": "Castellón",
-    "castelló": "Castellón",
-    "castelló/castellón": "Castellón",
-    "castelló (castellón)": "Castellón",
+    "castello/castellon": "Castellón",
+    "castello (castellon)": "Castellón",
     "ceuta": "Ceuta",
     "ciudad real": "Ciudad Real",
     "cordoba": "Córdoba",
-    "coruña": "A Coruña",
-    "a coruña": "A Coruña",
-    "la coruña": "A Coruña",
-    "a coruña (la coruña)": "A Coruña",
+    "coruna": "A Coruña",
+    "a coruna": "A Coruña",
+    "la coruna": "A Coruña",
+    "a coruna (la coruna)": "A Coruña",
     "cuenca": "Cuenca",
     "girona": "Girona",
-    "gerona": "Girona", // Or Girona, let's stick to official or common usage. User screenshot showed "Gerona (Gerona)" - let's normalize to Girona or Gerona? Official is Girona.
+    "gerona": "Girona",
     "gerona (girona)": "Girona",
     "granada": "Granada",
     "guadalajara": "Guadalajara",
     "gipuzkoa": "Guipúzcoa",
     "guipuzcoa": "Guipúzcoa",
-    "gipuzkoa (guipúzcoa)": "Guipúzcoa",
+    "gipuzkoa (guipuzcoa)": "Guipúzcoa",
     "huelva": "Huelva",
     "huesca": "Huesca",
     "illes balears": "Baleares",
@@ -187,38 +185,44 @@ const provinceMap = {
     "teruel": "Teruel",
     "toledo": "Toledo",
     "valencia": "Valencia",
-    "valència": "Valencia",
-    "valència/valencia": "Valencia",
-    "valència (valencia)": "Valencia",
+    "valencia/valencia": "Valencia",
+    "valencia (valencia)": "Valencia",
     "valladolid": "Valladolid",
     "zamora": "Zamora",
     "zaragoza": "Zaragoza",
     "albacete": "Albacete",
-    "almeria": "Almería"
+    "almeria": "Almería",
+    "desconocida": "Desconocida"
+};
+
+// Helper: Remove accents for normalization
+const removeAccents = (str) => {
+    return str.normalize("NFD").replace(/[\u0300-\u036f]/g, "");
 };
 
 const normalizeLocation = (rawLoc) => {
     if (!rawLoc) return "Desconocida";
     
     // Cleanup: remove extra spaces, lowercase for matching
-    const clean = rawLoc.trim().toLowerCase();
+    let clean = rawLoc.trim().toLowerCase();
+    
+    // Normalize accents (e.g., "AlmerÍA" -> "almeria")
+    clean = removeAccents(clean);
     
     // Direct map lookup
     if (provinceMap[clean]) {
         return provinceMap[clean];
     }
 
-    // Attempt to match if simplified
-    // Remove parenthesis content for a cleaner check if map fails
-    // e.g. "Alicante (Alacant)" -> "Alicante"
+    // Attempt to match if simplified (remove parenthesis content)
     const noParens = clean.replace(/\s*\(.*?\)\s*/g, '').trim();
     if (provinceMap[noParens]) {
         return provinceMap[noParens];
     }
 
-    // Default: Return capitalized raw if no match
-    // Capitalize first letter of each word
-    return clean.replace(/\b\w/g, c => c.toUpperCase());
+    // Default: Return "Desconocida" for truly unknown values
+    // We could also capitalize the first letter, but safer to use a known default
+    return "Desconocida";
 };
 
 // Common parser since both files seem to share structure now
