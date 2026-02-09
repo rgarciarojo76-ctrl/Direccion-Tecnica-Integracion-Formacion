@@ -455,6 +455,33 @@ textarea:focus {
   font-weight: 500;
 }
 
+/* Individual Course Card Styles */
+.course-card-aspy {
+  background-color: #e0f7ff; /* Soft sky blue */
+  border-left: 4px solid #009ee3; /* ASPY corporate blue */
+  border-radius: 12px;
+  transition: all 0.2s ease;
+  box-shadow: 0 1px 3px rgba(0, 158, 227, 0.1);
+}
+.course-card-aspy:hover {
+  background-color: #d0f0ff;
+  box-shadow: 0 4px 12px rgba(0, 158, 227, 0.15);
+  transform: translateY(-1px);
+}
+
+.course-card-mas {
+  background-color: #f3e8ff; /* Soft violet */
+  border-left: 4px solid #7c3aed; /* MAS corporate purple */
+  border-radius: 12px;
+  transition: all 0.2s ease;
+  box-shadow: 0 1px 3px rgba(124, 58, 237, 0.1);
+}
+.course-card-mas:hover {
+  background-color: #ede0ff;
+  box-shadow: 0 4px 12px rgba(124, 58, 237, 0.15);
+  transform: translateY(-1px);
+}
+
 
 /* Toggle Switch */
 .toggle-wrapper {
