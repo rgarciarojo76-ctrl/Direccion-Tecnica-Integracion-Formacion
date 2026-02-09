@@ -83,11 +83,34 @@ function App() {
       <header className="main-header">
         <div className="header-content max-w-7xl mx-auto px-6">
           <div className="header-left flex items-center gap-4">
-            {/* Logo Placeholder */}
-            {/* If a real logo is available, use <img src={logo} /> */}
+            {/* IA LAB Logo */}
             <div className="flex items-center gap-3">
-               <div className="logo-icon text-blue-500">
-                  <Layout size={28} color="var(--primary-color)" />
+               <div className="logo-icon">
+                  {/* IA LAB Brain Logo SVG */}
+                  <svg width="42" height="42" viewBox="0 0 120 120" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    {/* Brain left side - circuits */}
+                    <path d="M35 45 L35 35 L45 35 M45 45 L55 45 M35 55 L45 55 L45 65 M35 75 L45 75" 
+                          stroke="#009ee3" strokeWidth="3" strokeLinecap="round"/>
+                    
+                    {/* Brain right side - network */}
+                    <circle cx="75" cy="40" r="3" fill="#009ee3"/>
+                    <circle cx="85" cy="50" r="3" fill="#009ee3"/>
+                    <circle cx="75" cy="60" r="3" fill="#009ee3"/>
+                    <circle cx="85" cy="70" r="3" fill="#009ee3"/>
+                    <line x1="75" y1="40" x2="85" y2="50" stroke="#009ee3" strokeWidth="2"/>
+                    <line x1="85" y1="50" x2="75" y2="60" stroke="#009ee3" strokeWidth="2"/>
+                    <line x1="75" y1="60" x2="85" y2="70" stroke="#009ee3" strokeWidth="2"/>
+                    
+                    {/* Brain outline */}
+                    <path d="M 45 25 Q 60 20 75 25 Q 90 30 90 50 Q 90 70 75 85 Q 60 90 45 85 Q 30 80 30 50 Q 30 30 45 25 Z" 
+                          stroke="#009ee3" strokeWidth="4" fill="none"/>
+                    
+                    {/* Orbital ring */}
+                    <path d="M 20 60 Q 30 20 60 15 Q 90 20 100 60" 
+                          stroke="#009ee3" strokeWidth="3.5" fill="none" strokeLinecap="round"/>
+                    <circle cx="20" cy="60" r="4" fill="#009ee3"/>
+                    <circle cx="100" cy="60" r="4" fill="#009ee3"/>
+                  </svg>
                </div>
                <div className="flex flex-col">
                   <span className="text-secondary font-bold text-lg leading-tight" style={{ color: 'var(--primary-color)' }}>DIRECCIÓN TÉCNICA IA LAB</span>
