@@ -84,18 +84,12 @@ function App() {
         <div className="header-content max-w-7xl mx-auto px-6">
           <div className="header-left flex items-center gap-4">
             {/* IA LAB Logo */}
-            <div className="flex items-center gap-3">
-               <div className="logo-container">
-                  <img 
-                    src="/logos/ia_lab_logo.png" 
-                    alt="Dirección Técnica IA LAB" 
-                    className="h-12 w-auto object-contain"
-                  />
-               </div>
-               <div className="flex flex-col">
-                  <span className="text-secondary font-bold text-lg leading-tight" style={{ color: 'var(--primary-color)' }}>DIRECCIÓN TÉCNICA IA LAB</span>
-                  <span className="text-gray-400 text-xs uppercase tracking-wide">Gestión de Formación</span>
-               </div>
+            <div className="logo-container">
+               <img 
+                 src="/logos/ia_lab_logo.png" 
+                 alt="Dirección Técnica IA LAB - Gestión de Formación" 
+                 className="h-10 w-auto object-contain"
+               />
             </div>
           </div>
 
