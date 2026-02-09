@@ -397,7 +397,27 @@ textarea:focus {
 }
 
 /* Table Styles */
-/* Table styles are now handled via Tailwind classes in components */
+table {
+  border-collapse: separate;
+  border-spacing: 0 0.5rem;
+  width: 100%;
+}
+
+table thead tr th {
+  background: transparent;
+  padding: 0.75rem 1rem;
+  font-weight: 600;
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--text-secondary);
+  text-align: left;
+}
+
+table tbody tr td {
+  padding: 0.75rem 1rem;
+  vertical-align: middle;
+}
 
 .synergy-card {
   position: relative;
@@ -459,11 +479,18 @@ textarea:focus {
 
 /* Individual Course Card Styles */
 .course-row {
-  display: flex;
-  align-items: center;
-  margin: 0.5rem 0;
-  border-radius: 12px;
-  overflow: hidden;
+  /* Preserve table row behavior for column alignment */
+  margin: 0.25rem 0;
+}
+
+/* For proper rounded corners on table rows, apply to first/last cells */
+.course-row td:first-child {
+  border-top-left-radius: 12px;
+  border-bottom-left-radius: 12px;
+}
+.course-row td:last-child {
+  border-top-right-radius: 12px;
+  border-bottom-right-radius: 12px;
 }
 
 .course-card-aspy {
