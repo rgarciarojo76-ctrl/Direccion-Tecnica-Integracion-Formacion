@@ -77,10 +77,28 @@ function App() {
     }
   };
 
+  console.log("Current Version: v0.3.3 - DEBUG");
+
   return (
     <div className="app-container">
+      {/* DEBUG BANNER - REMOVE AFTER VERIFICATION */}
+      <div style={{
+        position: 'fixed',
+        top: 0,
+        left: 0,
+        width: '100%',
+        backgroundColor: 'red',
+        color: 'white',
+        textAlign: 'center',
+        padding: '5px',
+        zIndex: 9999,
+        fontWeight: 'bold'
+      }}>
+        VERSION DEBUG v0.3.3 - SI VES ESTO, SE HA ACTUALIZADO
+      </div>
+
       {/* HEADER */}
-      <header className="main-header">
+      <header className="main-header" style={{ marginTop: '30px' }}>
         <div className="header-content max-w-7xl mx-auto px-6">
           <div className="header-left flex items-center gap-4">
             {/* IA LAB Logo */}
