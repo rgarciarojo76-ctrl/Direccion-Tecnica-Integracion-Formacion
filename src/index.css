@@ -345,13 +345,61 @@ textarea:focus {
 /* Table Styles */
 /* Table styles are now handled via Tailwind classes in components */
 
-.synergy-row {
-  background-color: rgba(0, 158, 227, 0.03);
+.synergy-card {
+  position: relative;
+  overflow: hidden;
+  border-radius: 16px; /* rounded-2xl */
+  border: 2px solid #10b981; /* emerald-500 */
+  background-color: #f0fdf4; /* emerald-50 */
+  box-shadow: 0 10px 15px -3px rgba(16, 185, 129, 0.15), 0 4px 6px -2px rgba(16, 185, 129, 0.1);
+  margin: 0.75rem 0.25rem;
+  transition: transform 0.2s ease-in-out;
 }
-.synergy-row:hover {
-  background-color: rgba(0, 158, 227, 0.06);
+.synergy-card:hover {
+  transform: scale(1.002);
 }
 
-.text-mono {
-  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+.synergy-card-header-gradient {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 4px;
+  background: linear-gradient(90deg, #34d399, #10b981, #34d399);
 }
+
+.synergy-card-badge {
+  position: absolute;
+  top: 0;
+  left: 24px;
+  background-color: #059669; /* emerald-600 */
+  color: white;
+  font-size: 0.65rem; /* ~11px */
+  font-weight: 700;
+  padding: 0.35rem 1rem;
+  border-bottom-left-radius: 8px;
+  border-bottom-right-radius: 8px;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+  z-index: 10;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  letter-spacing: 0.05em;
+}
+
+.synergy-icon-circle {
+  padding: 0.5rem;
+  background-color: #d1fae5; /* emerald-100 */
+  color: #047857; /* emerald-700 */
+  border-radius: 9999px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.synergy-text-primary {
+  color: #065f46; /* emerald-800 */
+  font-size: 0.875rem; /* text-sm */
+  font-weight: 500;
+}
+
