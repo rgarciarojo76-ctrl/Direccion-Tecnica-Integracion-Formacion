@@ -444,3 +444,59 @@ textarea:focus {
   font-weight: 500;
 }
 
+
+/* Toggle Switch */
+.toggle-wrapper {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.35rem 0.75rem;
+  background-color: #f0fdf4; /* emerald-50 */
+  border: 1px solid #bbf7d0; /* emerald-200 */
+  border-radius: 9999px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+.toggle-wrapper:hover {
+  background-color: #dcfce7; /* emerald-100 */
+}
+.toggle-wrapper.active {
+  background-color: #d1fae5; /* emerald-100 */
+  border-color: #10b981; /* emerald-500 */
+}
+
+.toggle-input {
+  appearance: none;
+  width: 2.25rem;
+  height: 1.25rem;
+  background-color: #cbd5e1;
+  border-radius: 9999px;
+  position: relative;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+.toggle-input::after {
+  content: '';
+  position: absolute;
+  top: 2px;
+  left: 2px;
+  width: 1rem;
+  height: 1rem;
+  background-color: white;
+  border-radius: 50%;
+  transition: transform 0.2s ease;
+  box-shadow: 0 1px 2px rgba(0,0,0,0.1);
+}
+.toggle-input:checked {
+  background-color: #10b981; /* emerald-500 */
+}
+.toggle-input:checked::after {
+  transform: translateX(1rem);
+}
+
+.toggle-label {
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: #15803d; /* emerald-700 */
+  user-select: none;
+}
