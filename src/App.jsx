@@ -107,12 +107,12 @@ function App() {
                />
             </div>
             
-            {/* Separator */}
-            <div className="h-10 w-px bg-slate-300"></div>
+            {/* Separator - Using new class */}
+            <div className="header-separator"></div>
 
             {/* Text Block */}
             <div className="flex flex-col justify-center">
-              <h1 className="text-xl font-bold text-[#009ee3] leading-none mb-1">
+              <h1 className="text-xl font-bold text-primary leading-none mb-1" style={{ color: '#009ee3' }}>
                 DIRECCIÓN TÉCNICA IA LAB
               </h1>
               <p className="text-sm text-slate-500 font-medium leading-none">

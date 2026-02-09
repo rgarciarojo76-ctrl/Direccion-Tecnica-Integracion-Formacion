@@ -118,6 +118,47 @@ button {
   width: 100%;
 }
 
+/* Color Utilities */
+.text-primary {
+  color: var(--primary-color);
+}
+.text-slate-300 {
+  color: #cbd5e1;
+}
+.text-slate-400 {
+  color: #94a3b8;
+}
+.text-slate-500 {
+  color: #64748b;
+}
+.bg-slate-300 {
+  background-color: #cbd5e1;
+}
+
+/* Font Utilities */
+.font-bold {
+  font-weight: 700;
+}
+.text-xl {
+  font-size: 1.25rem;
+}
+.text-sm {
+  font-size: 0.875rem;
+}
+.leading-none {
+  line-height: 1;
+}
+.mb-1 {
+  margin-bottom: 0.25rem;
+}
+
+/* Header Specifics */
+.header-separator {
+  height: 2.5rem; /* h-10 */
+  width: 1px;
+  background-color: #cbd5e1; /* slate-300 */
+}
+
 /* Card Style */
 .card {
   background: var(--card-bg);
