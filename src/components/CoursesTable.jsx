@@ -125,25 +125,41 @@ const CoursesTable = ({ data }) => {
             if (item.type === 'group') {
                 return (
                     <React.Fragment key={item.id}>
-                        <tr className="bg-emerald-50/50">
+                        {/* Spacer row for visual separation */}
+                        <tr className="h-4"></tr> 
+                        <tr>
                             <td colSpan="10" className="p-0 border-none">
-                                <div className="relative border-l-4 border-emerald-500 bg-white shadow-sm rounded-r-xl my-2 mr-1">
-                                    <div className="absolute top-0 left-0 bg-emerald-500 text-white text-[10px] font-bold px-2 py-0.5 rounded-br">
-                                        AGRUPACIÓN RECOMENDADA
+                                <div className="relative overflow-hidden rounded-2xl border-2 border-emerald-500 bg-emerald-50/40 shadow-lg shadow-emerald-100/50 my-2 mx-1 transition-transform hover:scale-[1.005]">
+                                    
+                                    {/* Header Badge */}
+                                    <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-emerald-400 via-emerald-500 to-emerald-400"></div>
+                                    <div className="absolute top-0 left-6 bg-emerald-600 text-white text-[11px] font-bold px-4 py-1.5 rounded-b-lg shadow-sm tracking-wide z-10 flex items-center gap-2">
+                                        <span>✨ AGRUPACIÓN RECOMENDADA</span>
                                     </div>
-                                    <div className="p-4 pt-6 pl-6 pr-2">
+
+                                    <div className="p-6 pt-10">
+                                        <div className="flex items-center gap-3 mb-4 px-2">
+                                            <div className="p-2 bg-emerald-100/80 rounded-full text-emerald-700">
+                                                <Users size={18} />
+                                            </div>
+                                            <div className="text-sm text-emerald-800 font-medium">
+                                                Oportunidad de optimización detectada:
+                                                <span className="font-bold ml-1">
+                                                    {item.courses[1]?.inscritos || 1} alumno(s) de MAS ➔ Curso ASPY
+                                                </span>
+                                            </div>
+                                        </div>
+
                                         <table className="w-full border-separate border-spacing-y-2">
                                             <tbody>
                                                 {item.courses.map(course => <Row key={course.id} row={course} />)}
                                             </tbody>
                                         </table>
-                                        <div className="mt-2 text-xs text-emerald-700 italic px-2">
-                                            💡 {item.courses[1]?.inscritos || 1} alumno(s) de MAS podrían unirse al curso de ASPY.
-                                        </div>
                                     </div>
                                 </div>
                             </td>
                         </tr>
+                        <tr className="h-4"></tr>
                     </React.Fragment>
                 );
             }
