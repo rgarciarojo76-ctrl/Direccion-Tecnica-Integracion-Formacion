@@ -12,31 +12,73 @@
  */
 
 const KEYWORD_MAP = {
+    // Carretillas (Forklifts)
     'carretilla': 'carretilla',
-    'elevad': 'elevadora',
-    'altura': 'altura',
+    'frontal': 'carretilla',
+    'retracil': 'carretilla',
+    'apilador': 'carretilla',
+
+    // Plataformas (PEMP / Mobile Elevating Work Platforms)
+    'plataforma': 'pemp',
+    'pemp': 'pemp',
+    'elevadora': 'pemp', // Usually 'Plataforma Elevadora', check context if 'Carretilla Elevadora' exists
+
+    // General Safety (Resources)
     'recurso': 'preventivo',
     'prl': 'prl',
+    'basico': 'prl_basico',
+
+    // Heights
+    'altura': 'altura',
+    'vertical': 'altura',
+
+    // Emergencies
     'primeros': 'auxilios',
     'espacio': 'confinado',
     'fuego': 'extincion',
     'incendio': 'incendio',
+    'emergencia': 'emergencia',
+
+    // Machinery
     'puente': 'grua',
     'grua': 'grua',
+
+    // Electrical
     'electric': 'electric',
-    'riesgo': 'riesgo',
+    'tensión': 'electric', // Riesgo eléctrico / Alta tensión
+
+    // Office/Ergonomics
     'oficina': 'pantalla',
-    'emergencia': 'emergencia'
+    'pantalla': 'pantalla',
+    
+    // Others
+    'riesgo': 'riesgo' // Generic, might need refinement
 };
 
 const getKeywords = (title) => {
     if (!title) return [];
-    const normalized = title.toLowerCase();
-    const found = [];
-    for (const [key, value] of Object.entries(KEYWORD_MAP)) {
-        if (normalized.includes(key)) found.push(value);
+    const normalized = title.toLowerCase()
+        .normalize("NFD").replace(/[\u0300-\u036f]/g, ""); // Remove accents
+
+    const found = new Set();
+    
+    // Special handling for 'Carretilla Elevadora' vs 'Plataforma Elevadora'
+    if (normalized.includes('carretilla')) {
+        found.add('carretilla');
+    } else if (normalized.includes('plataforma') || normalized.includes('pemp')) {
+        found.add('pemp');
+    } else {
+        // Fallback to map for other terms
+        for (const [key, value] of Object.entries(KEYWORD_MAP)) {
+            if (normalized.includes(key)) {
+                // Determine if we should add it based on specific exclusions
+                if (key === 'elevadora' && found.has('carretilla')) continue; // Already handled
+                found.add(value);
+            }
+        }
     }
-    return found;
+    
+    return Array.from(found);
 };
 
 const areSimilar = (t1, t2) => {
