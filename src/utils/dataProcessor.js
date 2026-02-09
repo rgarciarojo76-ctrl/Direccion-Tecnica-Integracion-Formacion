@@ -310,6 +310,7 @@ const parseRow = (row, source) => {
         delegacion: ubicacion, // Use normalized location for delegation too
         plazas: plazasDisponibles !== undefined ? plazasDisponibles : 0,
         totalPlazas: plazasTotales || 0,
+        inscritos: (plazasTotales || 0) - (plazasDisponibles !== undefined ? plazasDisponibles : 0),
         estado: (plazasDisponibles > 0) ? "CONFIRMADO" : "CERRADO",
         duracion_presencial: extractedDuration || 0
     };

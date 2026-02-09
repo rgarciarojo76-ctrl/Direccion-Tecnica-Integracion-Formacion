@@ -21,7 +21,9 @@ const CoursesTable = ({ data }) => {
             <th className="px-4 py-2 text-center">Duración</th>
             <th className="px-4 py-2 text-center">Fechas</th>
             <th className="px-4 py-2">Ubicación</th>
-            <th className="px-4 py-2 text-center">Estado</th>
+            <th className="px-2 py-2 text-center w-16">Máximo</th>
+            <th className="px-2 py-2 text-center w-16">Inscritos</th>
+            <th className="px-2 py-2 text-center w-20">Disponibles</th>
           </tr>
         </thead>
         <tbody className="text-sm text-slate-600">
@@ -92,37 +94,42 @@ const CoursesTable = ({ data }) => {
               </td>
 
               {/* Estado / Plazas - Unified Column */}
-              <td className="p-3 text-center rounded-r-lg border-r border-y border-slate-100 group-hover:border-blue-200">
-                  <div className="flex flex-col items-center gap-1">
-                      <div className={`px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-wide border ${
-                          row.plazas > 0 ? 'bg-emerald-50 text-emerald-600 border-emerald-100' : 'bg-red-50 text-red-600 border-red-100'
-                      }`}>
-                          {row.plazas > 0 ? `${row.plazas} Disp.` : 'Agotado'}
-                      </div>
-                      
-                      <div className="text-[9px] text-slate-400">
-                          Max: {row.totalPlazas}
-                      </div>
+              {/* Máximo */}
+              <td className="p-3 text-center border-y border-slate-100 group-hover:border-blue-200 text-xs font-mono text-slate-500">
+                {row.totalPlazas}
+              </td>
 
-                       {/* Synergy - Floating Badge */}
-                       {row.hasSynergy && (
-                         <div className="absolute -top-1 -right-1">
-                            <span className="flex h-4 w-4 relative">
-                              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-sky-400 opacity-75"></span>
-                              <span className="relative inline-flex rounded-full h-4 w-4 bg-sky-500 items-center justify-center">
-                                  <Users size={8} className="text-white" />
-                              </span>
-                            </span>
-                         </div>
-                       )}
+              {/* Inscritos */}
+              <td className="p-3 text-center border-y border-slate-100 group-hover:border-blue-200 text-xs font-mono text-slate-700 font-semibold">
+                {row.inscritos}
+              </td>
+
+              {/* Disponibles */}
+              <td className="p-3 text-center rounded-r-lg border-r border-y border-slate-100 group-hover:border-blue-200 relative">
+                  <div className={`px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-wide border inline-block min-w-[60px] ${
+                      row.plazas > 0 ? 'bg-emerald-50 text-emerald-600 border-emerald-100' : 'bg-red-50 text-red-600 border-red-100'
+                  }`}>
+                      {row.plazas}
                   </div>
+
+                   {/* Synergy - Floating Badge */}
+                   {row.hasSynergy && (
+                     <div className="absolute -top-1 -right-1">
+                        <span className="flex h-4 w-4 relative">
+                          <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-sky-400 opacity-75"></span>
+                          <span className="relative inline-flex rounded-full h-4 w-4 bg-sky-500 items-center justify-center">
+                              <Users size={8} className="text-white" />
+                          </span>
+                        </span>
+                     </div>
+                   )}
               </td>
             </tr>
           ))}
 
           {data.length === 0 && (
             <tr>
-              <td colSpan="7" className="p-12 text-center">
+              <td colSpan="9" className="p-12 text-center">
                 <div className="mx-auto w-16 h-16 bg-slate-50 rounded-full flex items-center justify-center mb-4">
                     <img src="/logos/aspy_logo.png" className="h-6 opacity-20 filter grayscale" />
                 </div>
