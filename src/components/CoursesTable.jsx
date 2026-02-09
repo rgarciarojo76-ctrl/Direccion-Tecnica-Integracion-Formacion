@@ -11,20 +11,14 @@ const CoursesTable = ({ data }) => {
   };
 
   const Row = ({ row }) => {
-     const borderColor = row.source === 'ASPY' ? '#009ee3' : '#7c3aed';
-     const bgHover = row.source === 'ASPY' ? 'hover:bg-sky-50' : 'hover:bg-violet-50';
+     // Determine class based on source
+     const cardClass = row.source === 'ASPY' ? 'course-card-aspy' : 'course-card-mas';
 
      return (
-        <tr 
-          className={`bg-white shadow-sm hover:shadow-md transition-all duration-300 group relative rounded-xl ${bgHover}`}
-          style={{
-            border: `1.5px solid ${borderColor}`,
-            borderRadius: '12px' 
-          }}
-        >
+        <tr className={`course-row ${cardClass}`}>
           {/* Organizadora */}
-          <td className="p-4 text-center align-middle first:rounded-l-xl last:rounded-r-xl border-none">
-             <div className="h-8 w-20 flex items-center justify-center mx-auto bg-slate-50 rounded-lg p-1.5 border border-slate-100">
+          <td className="p-4 text-center align-middle border-none">
+             <div className="h-8 w-20 flex items-center justify-center mx-auto bg-white/50 rounded-lg p-1.5 border border-slate-200/50">
                <img 
                   src={getLogo(row.source)} 
                   alt={row.source} 
@@ -41,7 +35,7 @@ const CoursesTable = ({ data }) => {
               <span className="font-bold text-slate-800 text-[14px] leading-tight group-hover:text-current transition-colors">
                 {row.title}
               </span>
-              <span className="text-[11px] text-slate-500 font-mono bg-slate-100 inline-block px-2 py-0.5 rounded w-fit">
+              <span className="text-[11px] text-slate-500 font-mono bg-white/50 inline-block px-2 py-0.5 rounded w-fit border border-slate-200/50">
                 {row.code}
               </span>
             </div>
@@ -49,8 +43,8 @@ const CoursesTable = ({ data }) => {
 
           {/* Modalidad */}
           <td className="p-4 align-middle text-center border-none">
-            <span className={`inline-flex items-center px-2.5 py-1 rounded-md text-xs font-semibold ${
-               row.modalidad === 'Presencial' ? 'bg-blue-100 text-blue-700' : 'bg-purple-100 text-purple-700'
+            <span className={`inline-flex items-center px-2.5 py-1 rounded-md text-xs font-semibold bg-white/80 border ${
+               row.modalidad === 'Presencial' ? 'text-blue-700 border-blue-100' : 'text-purple-700 border-purple-100'
             }`}>
               {row.modalidad}
             </span>
@@ -76,7 +70,7 @@ const CoursesTable = ({ data }) => {
           {/* Ubicación */}
           <td className="p-4 align-middle border-none">
             <div className="flex items-center gap-2 text-sm font-medium text-slate-600">
-               <span className="w-1.5 h-1.5 rounded-full bg-slate-300"></span>
+               <span className="w-1.5 h-1.5 rounded-full bg-slate-400"></span>
                {row.ubicacion}
             </div>
           </td>
@@ -92,9 +86,9 @@ const CoursesTable = ({ data }) => {
           </td>
 
           {/* Disponibles */}
-          <td className="p-4 text-center align-middle border-none relative first:rounded-l-xl last:rounded-r-xl">
-              <div className={`px-3 py-1.5 rounded-lg text-sm font-bold border inline-flex items-center justify-center min-w-[50px] ${
-                  row.plazas > 0 ? 'bg-emerald-50 text-emerald-700 border-emerald-200' : 'bg-rose-50 text-rose-700 border-rose-200'
+          <td className="p-4 text-center align-middle border-none relative">
+              <div className={`px-3 py-1.5 rounded-lg text-sm font-bold border inline-flex items-center justify-center min-w-[50px] bg-white ${
+                  row.plazas > 0 ? 'text-emerald-700 border-emerald-200' : 'text-rose-700 border-rose-200'
               }`}>
                   {row.plazas}
               </div>
