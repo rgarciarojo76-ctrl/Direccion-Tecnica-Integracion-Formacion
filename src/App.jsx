@@ -53,7 +53,9 @@ function App() {
          
          const matchesLoc = filters.location === '' || c.ubicacion === filters.location;
          
-         return matchesSearch && matchesStart && matchesEnd && matchesLoc;
+         const matchesCompany = filters.company === 'ALL' || c.source === filters.company;
+
+         return matchesSearch && matchesStart && matchesEnd && matchesLoc && matchesCompany;
       };
 
       if (item.type === 'group') {

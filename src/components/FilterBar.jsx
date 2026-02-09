@@ -20,6 +20,20 @@ const FilterBar = ({ filters, onFilterChange, uniqueTitles = [], uniqueLocations
 
   return (
     <div className="flex flex-wrap items-center gap-4 w-full">
+      
+      {/* Company Tabs */}
+      <div className="tabs-container">
+          {['ALL', 'ASPY', 'MAS'].map((val) => (
+             <button
+               key={val}
+               className={`tab-btn ${filters.company === val ? 'active' : ''}`}
+               onClick={() => onFilterChange('company', val)}
+             >
+               {val === 'ALL' ? 'TODOS' : val}
+             </button>
+          ))}
+      </div>
+
       {/* Search Course (Tabulated/Normalized) */}
       <InputWrapper icon={Search}>
         <input
