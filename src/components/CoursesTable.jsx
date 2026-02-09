@@ -22,8 +22,8 @@ const CoursesTable = ({ data }) => {
                <img 
                   src={getLogo(row.source)} 
                   alt={row.source} 
-                  className={`w-full object-contain mix-blend-multiply ${
-                    row.source === 'MAS' ? 'max-h-1' : 'h-full'
+                  className={`object-contain mix-blend-multiply ${
+                    row.source === 'MAS' ? 'h-4 w-auto scale-90' : 'h-full w-full'
                   }`}
                />
              </div>
