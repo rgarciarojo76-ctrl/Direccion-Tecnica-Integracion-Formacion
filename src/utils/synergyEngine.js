@@ -21,7 +21,8 @@ const KEYWORD_MAP = {
     // Plataformas (PEMP / Mobile Elevating Work Platforms)
     'plataforma': 'pemp',
     'pemp': 'pemp',
-    'elevadora': 'pemp', // Usually 'Plataforma Elevadora', check context if 'Carretilla Elevadora' exists
+    // 'elevadora': 'pemp', // REMOVED: Managed manually in logic to avoid conflict with Carretilla
+
 
     // General Safety (Resources)
     'recurso': 'preventivo',
@@ -62,18 +63,27 @@ const getKeywords = (title) => {
 
     const found = new Set();
     
-    // Special handling for 'Carretilla Elevadora' vs 'Plataforma Elevadora'
-    if (normalized.includes('carretilla')) {
+    // 1. Explicit Checks
+    if (normalized.includes('carretilla') || normalized.includes('frontal') || normalized.includes('retracil') || normalized.includes('apilador')) {
         found.add('carretilla');
-    } else if (normalized.includes('plataforma') || normalized.includes('pemp')) {
+    }
+    
+    if (normalized.includes('plataforma') || normalized.includes('pemp')) {
         found.add('pemp');
-    } else {
-        // Fallback to map for other terms
-        for (const [key, value] of Object.entries(KEYWORD_MAP)) {
-            if (normalized.includes(key)) {
-                // Determine if we should add it based on specific exclusions
-                if (key === 'elevadora' && found.has('carretilla')) continue; // Already handled
-                found.add(value);
+    }
+
+    // 2. Loop through Map (excluding the above specific logic keys if needed, but Set handles dups)
+    for (const [key, value] of Object.entries(KEYWORD_MAP)) {
+        if (normalized.includes(key)) {
+            // Safety: If it matched 'carretilla', do NOT accept 'elevadora' or 'pemp' from map
+            // Ideally 'elevadora' should be removed from map or handled strictly
+            if (key === 'elevadora') {
+                 // Only treat 'elevadora' as 'pemp' if NOT carretilla
+                 if (!found.has('carretilla')) {
+                     found.add('pemp'); 
+                 }
+            } else {
+                 found.add(value);
             }
         }
     }
