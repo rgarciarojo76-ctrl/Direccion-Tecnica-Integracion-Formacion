@@ -17,14 +17,13 @@ const CoursesTable = ({ data }) => {
      return (
         <tr className={`course-row ${cardClass}`}>
           {/* Organizadora */}
-          <td className="p-4 text-center align-middle border-none">
-             <div className="h-8 w-20 flex items-center justify-center mx-auto bg-white/50 rounded-lg p-1.5 border border-slate-200/50">
+          <td className="p-2 text-center align-middle border-none">
+             <div className="h-6 w-12 flex items-center justify-center mx-auto bg-white/50 rounded p-1 border border-slate-200/50">
                <img 
                   src={getLogo(row.source)} 
                   alt={row.source} 
-                  className={`object-contain mix-blend-multiply ${
-                    row.source === 'MAS' ? 'h-auto w-1/2' : 'h-full w-full'
-                  }`}
+                  className="h-4 w-auto object-contain"
+                  style={{ maxWidth: '40px', maxHeight: '16px' }}
                />
              </div>
           </td>
