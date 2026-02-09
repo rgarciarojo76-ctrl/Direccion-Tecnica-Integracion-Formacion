@@ -19,7 +19,8 @@ const CoursesTable = ({ data }) => {
             <th className="px-4 py-3">Curso</th>
             <th className="px-4 py-3 text-center">Modalidad</th>
             <th className="px-4 py-3 text-center">Duración</th>
-            <th className="px-4 py-3 text-center">Fechas</th>
+            <th className="px-4 py-3 text-center">Inicio</th>
+            <th className="px-4 py-3 text-center">Fin</th>
             <th className="px-4 py-3">Ubicación</th>
             <th className="px-2 py-3 text-center w-20">Máximo</th>
             <th className="px-2 py-3 text-center w-20">Inscritos</th>
@@ -75,19 +76,21 @@ const CoursesTable = ({ data }) => {
               </td>
 
               {/* Duración */}
+              {/* Duración */}
               <td className="p-4 text-center align-middle border-none">
                  <div className="text-sm font-bold text-slate-600">
                     {row.duracion_presencial}h
                  </div>
               </td>
 
-              {/* Fechas */}
+              {/* Inicio */}
               <td className="p-4 text-center align-middle border-none">
-                <div className="flex flex-col items-center justify-center text-xs gap-0.5">
-                  <span className="font-bold text-slate-700">{row.startDatefmt}</span>
-                  <span className="text-[10px] text-slate-400">hasta</span>
-                  <span className="text-slate-500">{row.endDatefmt}</span>
-                </div>
+                <span className="text-xs font-bold text-slate-700">{row.startDatefmt}</span>
+              </td>
+
+              {/* Fin */}
+              <td className="p-4 text-center align-middle border-none">
+                <span className="text-xs font-bold text-slate-700">{row.endDatefmt}</span>
               </td>
 
               {/* Ubicación */}
@@ -110,11 +113,10 @@ const CoursesTable = ({ data }) => {
 
               {/* Disponibles */}
               <td className="p-4 text-center align-middle border-none relative first:rounded-l-xl last:rounded-r-xl">
-                  <div className={`px-3 py-1.5 rounded-lg text-xs font-bold uppercase tracking-wide border inline-flex flex-col items-center justify-center min-w-[70px] ${
+                  <div className={`px-3 py-1.5 rounded-lg text-sm font-bold border inline-flex items-center justify-center min-w-[50px] ${
                       row.plazas > 0 ? 'bg-emerald-50 text-emerald-700 border-emerald-200' : 'bg-rose-50 text-rose-700 border-rose-200'
                   }`}>
-                      <span className="text-sm">{row.plazas}</span>
-                      <span className="text-[9px] opacity-75">Libres</span>
+                      {row.plazas}
                   </div>
 
                    {/* Synergy - Floating Badge */}
@@ -135,7 +137,7 @@ const CoursesTable = ({ data }) => {
 
           {data.length === 0 && (
             <tr>
-              <td colSpan="9" className="p-16 text-center bg-slate-50 rounded-xl border border-dashed border-slate-300">
+              <td colSpan="10" className="p-16 text-center bg-slate-50 rounded-xl border border-dashed border-slate-300">
                 <div className="mx-auto w-20 h-20 bg-white rounded-full flex items-center justify-center mb-4 shadow-sm border border-slate-100">
                     <img src="/logos/aspy_logo.png" className="h-8 opacity-20 filter grayscale" />
                 </div>
