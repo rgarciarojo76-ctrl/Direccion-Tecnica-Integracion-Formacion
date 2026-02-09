@@ -1,0 +1,29 @@
+<svg width="64" height="64" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- Background circle for better visibility -->
+  <circle cx="32" cy="32" r="32" fill="white"/>
+  
+  <!-- Brain outline -->
+  <path d="M 24 13 Q 32 10 40 13 Q 48 16 48 27 Q 48 38 40 46 Q 32 49 24 46 Q 16 43 16 27 Q 16 16 24 13 Z" 
+        stroke="#009ee3" stroke-width="2.5" fill="none"/>
+  
+  <!-- Brain left side - circuits -->
+  <path d="M20 24 L20 19 L24 19 M24 24 L29 24 M20 29 L24 29 L24 35 M20 40 L24 40" 
+        stroke="#009ee3" stroke-width="2" stroke-linecap="round"/>
+  
+  <!-- Brain right side - network nodes -->
+  <circle cx="40" cy="21" r="2" fill="#009ee3"/>
+  <circle cx="45" cy="27" r="2" fill="#009ee3"/>
+  <circle cx="40" cy="32" r="2" fill="#009ee3"/>
+  <circle cx="45" cy="38" r="2" fill="#009ee3"/>
+  
+  <!-- Network connections -->
+  <line x1="40" y1="21" x2="45" y2="27" stroke="#009ee3" stroke-width="1.5"/>
+  <line x1="45" y1="27" x2="40" y2="32" stroke="#009ee3" stroke-width="1.5"/>
+  <line x1="40" y1="32" x2="45" y2="38" stroke="#009ee3" stroke-width="1.5"/>
+  
+  <!-- Orbital ring -->
+  <path d="M 10 32 Q 16 10 32 8 Q 48 10 54 32" 
+        stroke="#009ee3" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+  <circle cx="10" cy="32" r="2.5" fill="#009ee3"/>
+  <circle cx="54" cy="32" r="2.5" fill="#009ee3"/>
+</svg>
