@@ -42,7 +42,7 @@ const CoursesTable = ({ data }) => {
                       src={getLogo(row.source)} 
                       alt={row.source} 
                       className={`w-full object-contain mix-blend-multiply opacity-90 group-hover:opacity-100 transition-opacity ${
-                        row.source === 'MAS' ? 'max-h-2' : 'h-full'
+                        row.source === 'MAS' ? 'max-h-1' : 'h-full'
                       }`}
                    />
                  </div>
