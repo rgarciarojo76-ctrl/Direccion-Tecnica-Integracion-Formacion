@@ -2,7 +2,7 @@ import { read, utils } from 'xlsx';
 
 // FILE PATHS (In public folder)
 // FILE PATHS (In public folder)
-const ASPY_FILE = '/data/ASPY_Cursos_Guía_Azul_2026-02-09_12-51.xlsx';
+const ASPY_FILE = '/data/aspy_blue_2026.xlsx';
 const MAS_FILE = '/data/mas_2026.xls';
 
 // KEY MAPPINGS
