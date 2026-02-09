@@ -16,9 +16,9 @@ function App() {
   const [filters, setFilters] = useState({
     search: '',
     startDate: '',
-    endDate: '',
     location: '',
-    company: 'ALL'
+    company: 'ALL',
+    showSynergiesOnly: false
   });
 
   // Unique Values for "Tabulated" filters
@@ -59,6 +59,10 @@ function App() {
 
          return matchesSearch && matchesStart && matchesEnd && matchesLoc && matchesCompany;
       };
+
+      if (filters.showSynergiesOnly) {
+          return item.type === 'group';
+      }
 
       if (item.type === 'group') {
         return item.courses.some(checkCourse);

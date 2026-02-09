@@ -34,6 +34,17 @@ const FilterBar = ({ filters, onFilterChange, uniqueTitles = [], uniqueLocations
           ))}
       </div>
 
+      {/* Synergies Toggle */}
+      <label className={`toggle-wrapper ${filters.showSynergiesOnly ? 'active' : ''}`}>
+        <input 
+          type="checkbox" 
+          checked={filters.showSynergiesOnly}
+          onChange={(e) => onFilterChange('showSynergiesOnly', e.target.checked)}
+          className="toggle-input"
+        />
+        <span className="toggle-label">Solo Sinergias ✨</span>
+      </label>
+
       {/* Search Course (Tabulated/Normalized) */}
       <InputWrapper icon={Search}>
         <input
