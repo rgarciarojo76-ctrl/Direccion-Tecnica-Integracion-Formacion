@@ -3,64 +3,75 @@ import { Download, Layout, Settings } from 'lucide-react';
 
 import FilterBar from './components/FilterBar';
 import CoursesTable from './components/CoursesTable';
-import { loadData } from './utils/dataProcessor';
+import { loadData, calculateKPIs } from './utils/dataProcessor';
+import { processCourseListWithGroups } from './utils/synergyEngine'; // Import engine
 import { exportToExcel, exportToPDF } from './utils/exportUtils';
 import './App.css';
 
 function App() {
   const [data, setData] = useState([]);
+  const [loading, setLoading] = useState(true);
 
   // Filter State
   const [filters, setFilters] = useState({
-    course: '',
+    search: '',
     startDate: '',
-    endDate: '',
-    location: ''
+    endDate: ''
   });
 
   // Unique Values for "Tabulated" filters
   const uniqueTitles = useMemo(() => {
-    const titles = data.map(d => d.title);
+    // Flatten groups to get all titles
+    const flat = data.flatMap(item => item.type === 'group' ? item.courses : item);
+    const titles = flat.map(d => d.title);
     return [...new Set(titles)].sort();
   }, [data]);
 
   const uniqueLocations = useMemo(() => {
-    const locs = data.map(d => d.ubicacion);
+    const flat = data.flatMap(item => item.type === 'group' ? item.courses : item);
+    const locs = flat.map(d => d.ubicacion);
     return [...new Set(locs)].sort();
   }, [data]);
 
   // Filter Logic
   const filteredData = useMemo(() => {
     return data.filter(item => {
-      // Course Name (Text Search or Exact Match from Datalist)
-      if (filters.course && !item.title.toLowerCase().includes(filters.course.toLowerCase())) return false;
-      
-      // Location
-      if (filters.location && !item.ubicacion.toLowerCase().includes(filters.location.toLowerCase())) return false;
-      
-      // Date Range
-      if (filters.startDate) {
-        const startFilter = new Date(filters.startDate);
-        // Compare: item.startDateRaw must be >= startFilter
-        if (item.startDateRaw && item.startDateRaw < startFilter) return false;
-      }
+      // Helper to check a single course against filters
+      const checkCourse = (c) => {
+         const matchesSearch = c.title.toLowerCase().includes(filters.search.toLowerCase()) || 
+                               c.code.toLowerCase().includes(filters.search.toLowerCase());
+         
+         let matchesStart = true;
+         if (filters.startDate) {
+           matchesStart = new Date(c.startDateRaw) >= new Date(filters.startDate);
+         }
 
-      if (filters.endDate) {
-        const endFilter = new Date(filters.endDate);
-        // Compare: item.startDateRaw must be <= endFilter (or use end date? usually start date within range)
-        // Let's assume user wants courses STARTING within range.
-        if (item.startDateRaw && item.startDateRaw > endFilter) return false;
-      }
+         let matchesEnd = true;
+         if (filters.endDate) {
+            matchesEnd = new Date(c.startDateRaw) <= new Date(filters.endDate);
+         }
+         
+         const matchesLoc = filters.location === '' || c.ubicacion === filters.location;
+         
+         return matchesSearch && matchesStart && matchesEnd && matchesLoc;
+      };
 
-      return true;
+      if (item.type === 'group') {
+        return item.courses.some(checkCourse);
+      }
+      
+      return checkCourse(item);
     });
   }, [data, filters]);
 
   // Load Data
   useEffect(() => {
     const fetchData = async () => {
-      const processed = await loadData();
+      setLoading(true);
+      const rawData = await loadData();
+      const processed = processCourseListWithGroups(rawData);
       setData(processed);
+      setLoading(false);
     };
     fetchData();
   }, []);
@@ -70,10 +81,13 @@ function App() {
   };
 
   const handleExport = () => {
+    // Flatten data for export
+    const flatData = filteredData.flatMap(item => item.type === 'group' ? item.courses : item);
+    
     if (confirm("¿Desea exportar a Excel? (Cancelar para PDF)")) {
-      exportToExcel(filteredData);
+      exportToExcel(flatData);
     } else {
-      exportToPDF(filteredData);
+      exportToPDF(flatData);
     }
   };
 
@@ -140,8 +154,6 @@ function App() {
           </button>
         </div>
 
-
-
         {/* FILTERS & TOOLBAR */}
         <div className="card p-6 mb-6 bg-white rounded-2xl shadow-sm border border-slate-100">
            <h3 className="text-lg font-semibold text-slate-700 mb-4">Filtros de Búsqueda</h3>
@@ -155,7 +167,13 @@ function App() {
 
         {/* DATA TABLE */}
         <div className="mt-6">
-          <CoursesTable data={filteredData} />
+          {loading ? (
+             <div className="p-12 text-center text-slate-500">
+                <span className="animate-pulse">Cargando datos...</span>
+             </div>
+          ) : (
+             <CoursesTable data={filteredData} />
+          )}
         </div>
 
       </main>
