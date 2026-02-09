@@ -142,8 +142,12 @@ function App() {
         {/* Title Section */}
         <div className="mb-8 flex justify-between items-end">
           <div>
-            <h1 className="text-3xl font-bold text-slate-800 mb-2">Panel de Control</h1>
-            <p className="text-slate-500">Visión global del estado de los cursos formativos.</p>
+            <h1 className="text-3xl font-bold text-slate-800 mb-2">
+              Programación Oferta Formativa Conjunta ASPY - MAS 2026
+            </h1>
+            <p className="text-slate-500">
+              Visualización unificada de cursos y detección de oportunidades de sinergia
+            </p>
           </div>
           <button 
             onClick={handleExport}
