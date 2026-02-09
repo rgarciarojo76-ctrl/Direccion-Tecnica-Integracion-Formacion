@@ -257,12 +257,18 @@ const parseRow = (row, source) => {
     let extractedDuration = duracion; // Default to column value
 
     if (source === 'ASPY') {
-        // Extract duration from title if present (e.g., "TITLE - 20h" or "TITLE (TEÓRICO-PRÁCTICO) - 8 horas")
-        const durationMatch = rawTitle.match(/[-–]\s*(\d+)\s*h(?:oras)?/i);
+        // Extract duration from title (e.g., "TITLE - 20h", "TITLE (20h)", "TITLE 8 horas")
+        // NEW REGEX: Matches (\d+) followed by 'h' or 'horas', optionally inside parentheses or after a dash
+        const durationRegex = /(?:[-–(]|\b)(\d+)\s*h(?:oras)?(?:\)|$)/i;
+        const durationMatch = rawTitle.match(durationRegex);
+        
         if (durationMatch) {
             extractedDuration = parseInt(durationMatch[1], 10);
-            // Remove duration from title
-            title = rawTitle.replace(/[-–]\s*\d+\s*h(?:oras)?/i, '').trim();
+            // Remove duration from title (globally to catch it anywhere)
+            title = rawTitle.replace(new RegExp(durationRegex.source, 'gi'), '').trim();
+            // console.log(`ASPY DURATION FOUND: "${rawTitle}" -> ${extractedDuration}h`);
+        } else {
+            // console.log(`ASPY NO DURATION: "${rawTitle}"`);
         }
         
         // [CODE] Title | Info
