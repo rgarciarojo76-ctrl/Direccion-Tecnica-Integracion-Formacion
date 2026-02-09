@@ -159,10 +159,10 @@ function App() {
         {/* Title Section */}
         <div className="mb-8 flex justify-between items-end">
           <div>
-            <h1 className="text-3xl font-bold text-slate-800 mb-2">
+            <h1 className="text-3xl font-bold mb-2" style={{ color: '#009ee3' }}>
               Programación Oferta Formativa Conjunta ASPY - MAS 2026
             </h1>
-            <p className="text-slate-500">
+            <p className="font-medium" style={{ color: '#009ee3', opacity: 0.8 }}>
               Visualización unificada de cursos y detección de oportunidades de sinergia
             </p>
           </div>
