@@ -53,7 +53,7 @@ const CoursesTable = ({ data }) => {
           {/* Duración */}
           <td className="p-4 text-center align-middle border-none">
              <div className="text-sm font-bold text-slate-600">
-                {row.duracion_presencial}h
+                {row.duracion_presencial}
              </div>
           </td>
 
