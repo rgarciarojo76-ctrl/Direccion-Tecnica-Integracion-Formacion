@@ -192,7 +192,7 @@ function buildSynergyGroup(c1, c2) {
             id: `group-${c1.id}-${c2.id}`,
             courses: [reference, other],
             scenarioType: 'reference_potential',
-            suggestion: `Posible agrupación futura: ${reference.source} tiene ${reference.inscritos} alumno(s) inscrito(s)`,
+            suggestion: `Posible agrupación futura: ${reference.source} tiene ${reference.inscritos} alumnos inscritos y ${reference.plazas} plazas disponibles`,
             anfitriona: reference,
             emisora: other,
             alumnosToMove: 0
