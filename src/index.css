@@ -479,28 +479,28 @@ table tbody tr td {
 
 /* === Synergy Card Variants === */
 
-/* Escenario C: Overflow / Warning */
+/* Escenario C: Overflow / No recomendada (Negro + Gris) */
 .synergy-card-warning {
-  border-color: #f59e0b; /* amber-500 */
-  background-color: #fffbeb; /* amber-50 */
-  box-shadow: 0 10px 15px -3px rgba(245, 158, 11, 0.15), 0 4px 6px -2px rgba(245, 158, 11, 0.1);
+  border-color: #1f2937; /* gray-800 / black */
+  background-color: #f3f4f6; /* gray-100 */
+  box-shadow: 0 10px 15px -3px rgba(31, 41, 55, 0.15), 0 4px 6px -2px rgba(31, 41, 55, 0.1);
 }
 
 .synergy-gradient-warning {
-  background: linear-gradient(90deg, #fbbf24, #f59e0b, #fbbf24) !important;
+  background: linear-gradient(90deg, #4b5563, #1f2937, #4b5563) !important;
 }
 
 .synergy-card-badge-warning {
-  background-color: #d97706 !important; /* amber-600 */
+  background-color: #1f2937 !important; /* gray-800 */
 }
 
 .synergy-icon-warning {
-  background-color: #fef3c7 !important; /* amber-100 */
-  color: #92400e !important; /* amber-800 */
+  background-color: #e5e7eb !important; /* gray-200 */
+  color: #1f2937 !important; /* gray-800 */
 }
 
 .synergy-text-warning {
-  color: #92400e; /* amber-800 */
+  color: #1f2937; /* gray-800 */
   font-size: 0.875rem;
   font-weight: 600;
 }
