@@ -251,7 +251,7 @@ function buildSynergyGroup(c1, c2) {
         id: `group-${c1.id}-${c2.id}`,
         courses: [anfitriona, emisora],
         scenarioType: 'overflow',
-        suggestion: `Agrupación no recomendada por superar el número máximo de alumnos de las dos compañías`,
+        suggestion: `Agrupación no recomendada porque se superan el número máximo de alumnos entre las dos compañías`,
         anfitriona,
         emisora,
         alumnosToMove: 0
