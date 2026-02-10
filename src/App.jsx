@@ -118,9 +118,14 @@ function App() {
             
             {/* App descriptor - separated by subtle divider */}
             <div className="header-separator" style={{ marginLeft: '1.25rem', marginRight: '1.25rem' }}></div>
-            <p className="header-brand-subtitle">
-              App: Prueba concepto programación de cursos conjuntos
-            </p>
+            <div className="flex flex-col justify-center">
+              <span style={{ color: '#009ee3', fontWeight: 700, fontSize: '0.95rem', lineHeight: 1.3 }}>
+                DIRECCIÓN TÉCNICA IA LAB
+              </span>
+              <span style={{ color: '#009ee3', fontWeight: 500, fontSize: '0.8rem', lineHeight: 1.3 }}>
+                Aplicación: Prueba concepto programación de cursos conjuntos
+              </span>
+            </div>
           </div>
 
           <div className="header-right flex items-center gap-3">
