@@ -223,7 +223,7 @@ function buildSynergyGroup(c1, c2) {
             id: `group-${c1.id}-${c2.id}`,
             courses: [anfitriona, emisora],
             scenarioType: 'optimal',
-            suggestion: `Oportunidad de optimización detectada: ${emisoraInscritos} alumno(s) de ${emisora.source} ➔ Curso ${anfitriona.source}`,
+            suggestion: `Oportunidad de optimización detectada: ${emisoraInscritos} ${emisoraInscritos === 1 ? 'alumno' : 'alumnos'} de ${emisora.source} ${emisoraInscritos === 1 ? 'podría inscribirse' : 'podrían inscribirse'} en el curso ${anfitriona.source}`,
             anfitriona,
             emisora,
             alumnosToMove: emisoraInscritos
@@ -238,7 +238,7 @@ function buildSynergyGroup(c1, c2) {
             id: `group-${c1.id}-${c2.id}`,
             courses: [emisora, anfitriona], // Swapped order
             scenarioType: 'permuted',
-            suggestion: `Oportunidad de optimización detectada: ${anfitInscritos} alumno(s) de ${anfitriona.source} ➔ Curso ${emisora.source}`,
+            suggestion: `Oportunidad de optimización detectada: ${anfitInscritos} ${anfitInscritos === 1 ? 'alumno' : 'alumnos'} de ${anfitriona.source} ${anfitInscritos === 1 ? 'podría inscribirse' : 'podrían inscribirse'} en el curso ${emisora.source}`,
             anfitriona: emisora,   // Swapped
             emisora: anfitriona,   // Swapped
             alumnosToMove: anfitInscritos
