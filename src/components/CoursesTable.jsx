@@ -100,32 +100,57 @@ const CoursesTable = ({ data }) => {
   const SynergyGroup = ({ item }) => {
     const scenario = item.scenarioType || 'optimal';
 
-    // Card CSS class
-    const cardClass = scenario === 'overflow' 
-      ? 'synergy-card synergy-card-warning' 
-      : scenario === 'reference'
-      ? 'synergy-card synergy-card-reference'
-      : 'synergy-card';
+    // Card CSS class by scenario
+    const cardClassMap = {
+      optimal: 'synergy-card',
+      permuted: 'synergy-card',
+      overflow: 'synergy-card synergy-card-warning',
+      reference_potential: 'synergy-card synergy-card-ref-potential',
+      reference_unlikely: 'synergy-card synergy-card-ref-unlikely',
+    };
+    const cardClass = cardClassMap[scenario] || 'synergy-card';
 
     // Badge text & icon
     const badgeInfo = {
-      optimal:   { text: '✨ AGRUPACIÓN RECOMENDADA', className: 'synergy-card-badge' },
-      permuted:  { text: '🔄 AGRUPACIÓN RECOMENDADA (PERMUTADA)', className: 'synergy-card-badge' },
-      overflow:  { text: '⚠️ AGRUPACIÓN NO RECOMENDADA', className: 'synergy-card-badge synergy-card-badge-warning' },
-      reference: { text: '📍 GRUPO DE REFERENCIA', className: 'synergy-card-badge synergy-card-badge-reference' },
+      optimal:             { text: '✨ AGRUPACIÓN RECOMENDADA', className: 'synergy-card-badge' },
+      permuted:            { text: '🔄 AGRUPACIÓN RECOMENDADA (PERMUTADA)', className: 'synergy-card-badge' },
+      overflow:            { text: '⚠️ AGRUPACIÓN NO RECOMENDADA', className: 'synergy-card-badge synergy-card-badge-warning' },
+      reference_potential: { text: '🟠 POSIBLE AGRUPACIÓN FUTURA', className: 'synergy-card-badge synergy-card-badge-ref-potential' },
+      reference_unlikely:  { text: '🔴 IMPROBABLE AGRUPACIÓN FUTURA', className: 'synergy-card-badge synergy-card-badge-ref-unlikely' },
     };
 
     const badge = badgeInfo[scenario] || badgeInfo.optimal;
 
+    // Gradient class
+    const gradientClassMap = {
+      overflow: 'synergy-gradient-warning',
+      reference_potential: 'synergy-gradient-ref-potential',
+      reference_unlikely: 'synergy-gradient-ref-unlikely',
+    };
+    const gradientExtra = gradientClassMap[scenario] || '';
+
     // Icon & message
     const renderMessage = () => {
-      if (scenario === 'reference') {
+      if (scenario === 'reference_potential') {
         return (
           <div className="flex items-center gap-3 mb-4 px-2">
-            <div className="synergy-icon-circle synergy-icon-reference">
+            <div className="synergy-icon-circle synergy-icon-ref-potential">
               <MapPin size={18} />
             </div>
-            <div className="synergy-text-reference">
+            <div className="synergy-text-ref-potential">
+              {item.suggestion}
+            </div>
+          </div>
+        );
+      }
+
+      if (scenario === 'reference_unlikely') {
+        return (
+          <div className="flex items-center gap-3 mb-4 px-2">
+            <div className="synergy-icon-circle synergy-icon-ref-unlikely">
+              <AlertTriangle size={18} />
+            </div>
+            <div className="synergy-text-ref-unlikely">
               {item.suggestion}
             </div>
           </div>
@@ -165,7 +190,7 @@ const CoursesTable = ({ data }) => {
           <td colSpan="10" className="p-0 border-none">
             <div className={cardClass}>
               {/* Header Gradient */}
-              <div className={`synergy-card-header-gradient ${scenario === 'overflow' ? 'synergy-gradient-warning' : scenario === 'reference' ? 'synergy-gradient-reference' : ''}`}></div>
+              <div className={`synergy-card-header-gradient ${gradientExtra}`}></div>
               <div className={badge.className}>
                 <span>{badge.text}</span>
               </div>

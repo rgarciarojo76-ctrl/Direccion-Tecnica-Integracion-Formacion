@@ -505,28 +505,54 @@ table tbody tr td {
   font-weight: 600;
 }
 
-/* 0-Enrolled: Reference Group */
-.synergy-card-reference {
-  border-color: #3b82f6; /* blue-500 */
-  background-color: #eff6ff; /* blue-50 */
-  box-shadow: 0 10px 15px -3px rgba(59, 130, 246, 0.15), 0 4px 6px -2px rgba(59, 130, 246, 0.1);
+/* One company has inscritos: "POSIBLE AGRUPACIÓN FUTURA" (Orange / Amber) */
+.synergy-card-ref-potential {
+  border-color: #f59e0b; /* amber-500 */
+  background-color: #fffbeb; /* amber-50 */
+  box-shadow: 0 10px 15px -3px rgba(245, 158, 11, 0.15), 0 4px 6px -2px rgba(245, 158, 11, 0.1);
 }
 
-.synergy-gradient-reference {
-  background: linear-gradient(90deg, #60a5fa, #3b82f6, #60a5fa) !important;
+.synergy-gradient-ref-potential {
+  background: linear-gradient(90deg, #fbbf24, #f59e0b, #fbbf24) !important;
 }
 
-.synergy-card-badge-reference {
-  background-color: #2563eb !important; /* blue-600 */
+.synergy-card-badge-ref-potential {
+  background-color: #d97706 !important; /* amber-600 */
 }
 
-.synergy-icon-reference {
-  background-color: #dbeafe !important; /* blue-100 */
-  color: #1e40af !important; /* blue-800 */
+.synergy-icon-ref-potential {
+  background-color: #fef3c7 !important; /* amber-100 */
+  color: #92400e !important; /* amber-800 */
 }
 
-.synergy-text-reference {
-  color: #1e40af; /* blue-800 */
+.synergy-text-ref-potential {
+  color: #92400e; /* amber-800 */
+  font-size: 0.875rem;
+  font-weight: 600;
+}
+
+/* Neither company has inscritos: "IMPROBABLE AGRUPACIÓN FUTURA" (Red) */
+.synergy-card-ref-unlikely {
+  border-color: #ef4444; /* red-500 */
+  background-color: #fef2f2; /* red-50 */
+  box-shadow: 0 10px 15px -3px rgba(239, 68, 68, 0.15), 0 4px 6px -2px rgba(239, 68, 68, 0.1);
+}
+
+.synergy-gradient-ref-unlikely {
+  background: linear-gradient(90deg, #f87171, #ef4444, #f87171) !important;
+}
+
+.synergy-card-badge-ref-unlikely {
+  background-color: #dc2626 !important; /* red-600 */
+}
+
+.synergy-icon-ref-unlikely {
+  background-color: #fee2e2 !important; /* red-100 */
+  color: #991b1b !important; /* red-800 */
+}
+
+.synergy-text-ref-unlikely {
+  color: #991b1b; /* red-800 */
   font-size: 0.875rem;
   font-weight: 600;
 }

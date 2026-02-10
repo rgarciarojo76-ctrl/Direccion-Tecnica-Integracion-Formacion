@@ -168,15 +168,31 @@ function buildSynergyGroup(c1, c2) {
 
     // === RULE 3: Zero-enrolled filter ===
     if (inscritosA === 0 || inscritosB === 0) {
-        // The course WITH inscritos is the reference group
+        const bothZero = inscritosA === 0 && inscritosB === 0;
         const reference = inscritosA > 0 ? c1 : (inscritosB > 0 ? c2 : c1);
         const other = reference === c1 ? c2 : c1;
+
+        if (bothZero) {
+            // Neither company has students → unlikely future grouping
+            return {
+                type: 'group',
+                id: `group-${c1.id}-${c2.id}`,
+                courses: [c1, c2],
+                scenarioType: 'reference_unlikely',
+                suggestion: `Improbable agrupación futura: ninguna compañía tiene alumnos inscritos`,
+                anfitriona: c1,
+                emisora: c2,
+                alumnosToMove: 0
+            };
+        }
+
+        // One company has students, the other doesn't → potential future grouping
         return {
             type: 'group',
             id: `group-${c1.id}-${c2.id}`,
             courses: [reference, other],
-            scenarioType: 'reference',
-            suggestion: `Grupo de Referencia en la zona`,
+            scenarioType: 'reference_potential',
+            suggestion: `Posible agrupación futura: ${reference.source} tiene ${reference.inscritos} alumno(s) inscrito(s)`,
             anfitriona: reference,
             emisora: other,
             alumnosToMove: 0
