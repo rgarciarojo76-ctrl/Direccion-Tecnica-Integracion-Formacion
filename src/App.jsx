@@ -1,10 +1,10 @@
 import React, { useState, useEffect, useMemo } from 'react';
-import { Download, Layout, Settings } from 'lucide-react';
+import { Download, Layout } from 'lucide-react';
 
 import FilterBar from './components/FilterBar';
 import CoursesTable from './components/CoursesTable';
 import { loadData } from './utils/dataProcessor';
-import { processCourseListWithGroups } from './utils/synergyEngine'; // Import engine
+import { processCourseListWithGroups } from './utils/synergyEngine';
 import { exportToExcel, exportToPDF } from './utils/exportUtils';
 import './App.css';
 
@@ -23,7 +23,6 @@ function App() {
 
   // Unique Values for "Tabulated" filters
   const uniqueTitles = useMemo(() => {
-    // Flatten groups to get all titles
     const flat = data.flatMap(item => item.type === 'group' ? item.courses : item);
     const titles = flat.map(d => d.title);
     return [...new Set(titles)].sort();
@@ -38,7 +37,6 @@ function App() {
   // Filter Logic
   const filteredData = useMemo(() => {
     return data.filter(item => {
-      // Helper to check a single course against filters
       const checkCourse = (c) => {
          const matchesSearch = c.title.toLowerCase().includes(filters.search.toLowerCase()) || 
                                c.code.toLowerCase().includes(filters.search.toLowerCase());
@@ -54,7 +52,6 @@ function App() {
          }
          
          const matchesLoc = filters.location === '' || c.ubicacion === filters.location;
-         
          const matchesCompany = filters.company === 'ALL' || c.source === filters.company;
 
          return matchesSearch && matchesStart && matchesEnd && matchesLoc && matchesCompany;
@@ -87,20 +84,15 @@ function App() {
   const handleFilterChange = (name, value) => {
     setFilters(prev => {
         const next = { ...prev, [name]: value };
-        
-        // AUTO-ENABLE SYNERGY MODE: When a location is selected, default to showing only synergies
         if (name === 'location' && value && value.trim() !== '') {
             next.showSynergiesOnly = true;
         }
-        
         return next;
     });
   };
 
   const handleExport = () => {
-    // Flatten data for export
     const flatData = filteredData.flatMap(item => item.type === 'group' ? item.courses : item);
-    
     if (confirm("¿Desea exportar a Excel? (Cancelar para PDF)")) {
       exportToExcel(flatData);
     } else {
@@ -110,71 +102,61 @@ function App() {
 
   return (
     <div className="app-container">
-      {/* HEADER */}
+      {/* TOP BAR */}
       <header className="main-header">
         <div className="header-content max-w-7xl mx-auto px-6">
           <div className="header-left flex items-center gap-6">
-            {/* IA LAB Logo */}
             <div className="logo-container flex flex-col justify-center">
                <img 
                  src="/logos/ia_lab_logo.png" 
                  alt="IA LAB" 
                  className="object-contain"
-                 style={{ height: '55px', width: 'auto' }}
+                 style={{ height: '48px', width: 'auto' }}
                />
             </div>
             
-            {/* Separator - Using new class */}
             <div className="header-separator"></div>
 
-            {/* Text Block */}
             <div className="flex flex-col justify-center">
-              <h1 className="text-xl font-bold text-primary leading-none mb-1" style={{ color: '#009ee3' }}>
+              <h1 className="header-brand-title">
                 DIRECCIÓN TÉCNICA IA LAB
               </h1>
-              <p className="text-sm text-slate-500 font-medium leading-none">
-                App: Prueba concepto programación de cursos conjunta
+              <p className="header-brand-subtitle">
+                App: Prueba concepto programación de cursos conjuntos
               </p>
             </div>
           </div>
 
-          <div className="header-right flex items-center gap-4">
-            <div className="status-pill flex items-center gap-2 bg-blue-50 text-blue-600 px-3 py-1 rounded-full text-xs font-semibold border border-blue-100">
+          <div className="header-right flex items-center gap-3">
+            <div className="status-pill">
               Estado: Piloto Interno
             </div>
-            
-            <div className="warning-pill flex items-center gap-2 bg-orange-50 text-orange-600 px-4 py-1 rounded-full text-xs border border-orange-100">
+            <div className="warning-pill">
               <span className="font-bold">AVISO:</span> Datos en validación.
             </div>
-
-            <button className="icon-btn text-gray-400 hover:text-gray-600 transition-colors">
-              <Settings size={20} />
-            </button>
           </div>
         </div>
       </header>
 
-      <main className="max-w-7xl mx-auto px-6 py-8">
-        
-        {/* Title Section */}
-        <div className="mb-8 flex justify-between items-end">
+      {/* HERO TITLE BAR */}
+      <div className="hero-section">
+        <div className="max-w-7xl mx-auto px-6 hero-inner">
           <div>
-            <h1 className="text-3xl font-bold mb-2" style={{ color: '#009ee3' }}>
+            <h2 className="hero-title">
               Programación Oferta Formativa Conjunta ASPY - MAS 2026
-            </h1>
-            <p className="font-medium" style={{ color: '#009ee3', opacity: 0.8 }}>
+            </h2>
+            <p className="hero-subtitle">
               Visualización unificada de cursos y detección de oportunidades de sinergia
             </p>
           </div>
-          <button 
-            onClick={handleExport}
-            className="btn-primary btn-compact shadow-sm hover:shadow-md"
-          >
+          <button onClick={handleExport} className="btn-export">
             <Download size={16} />
             <span>Exportar Informe</span>
           </button>
         </div>
+      </div>
 
+      <main className="max-w-7xl mx-auto px-6 py-8">
         {/* FILTERS & TOOLBAR */}
         <div className="card p-6 mb-6 bg-white rounded-2xl shadow-sm border border-slate-100">
            <h3 className="text-lg font-semibold text-slate-700 mb-4">Filtros de Búsqueda</h3>
