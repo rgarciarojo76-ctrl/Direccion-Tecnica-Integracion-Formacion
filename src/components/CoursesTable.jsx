@@ -1,8 +1,7 @@
 import React from 'react';
-import { Users, Search } from 'lucide-react';
+import { Users, Search, AlertTriangle, MapPin } from 'lucide-react';
 
 const CoursesTable = ({ data }) => {
-
 
   const getLogo = (source) => {
     if (source === 'ASPY') return '/logos/aspy_logo.png';
@@ -11,7 +10,6 @@ const CoursesTable = ({ data }) => {
   };
 
   const Row = ({ row }) => {
-     // Determine class based on source
      const cardClass = row.source === 'ASPY' ? 'course-card-aspy' : 'course-card-mas';
 
      return (
@@ -96,6 +94,99 @@ const CoursesTable = ({ data }) => {
      );
   };
 
+  /**
+   * Renders the synergy group card with dynamic content based on scenarioType.
+   */
+  const SynergyGroup = ({ item }) => {
+    const scenario = item.scenarioType || 'optimal';
+
+    // Card CSS class
+    const cardClass = scenario === 'overflow' 
+      ? 'synergy-card synergy-card-warning' 
+      : scenario === 'reference'
+      ? 'synergy-card synergy-card-reference'
+      : 'synergy-card';
+
+    // Badge text & icon
+    const badgeInfo = {
+      optimal:   { text: '✨ AGRUPACIÓN RECOMENDADA', className: 'synergy-card-badge' },
+      permuted:  { text: '🔄 AGRUPACIÓN RECOMENDADA (PERMUTADA)', className: 'synergy-card-badge' },
+      overflow:  { text: '⚠️ AGRUPACIÓN NO RECOMENDADA', className: 'synergy-card-badge synergy-card-badge-warning' },
+      reference: { text: '📍 GRUPO DE REFERENCIA', className: 'synergy-card-badge synergy-card-badge-reference' },
+    };
+
+    const badge = badgeInfo[scenario] || badgeInfo.optimal;
+
+    // Icon & message
+    const renderMessage = () => {
+      if (scenario === 'reference') {
+        return (
+          <div className="flex items-center gap-3 mb-4 px-2">
+            <div className="synergy-icon-circle synergy-icon-reference">
+              <MapPin size={18} />
+            </div>
+            <div className="synergy-text-reference">
+              {item.suggestion}
+            </div>
+          </div>
+        );
+      }
+
+      if (scenario === 'overflow') {
+        return (
+          <div className="flex items-center gap-3 mb-4 px-2">
+            <div className="synergy-icon-circle synergy-icon-warning">
+              <AlertTriangle size={18} />
+            </div>
+            <div className="synergy-text-warning">
+              {item.suggestion}
+            </div>
+          </div>
+        );
+      }
+
+      // optimal or permuted
+      return (
+        <div className="flex items-center gap-3 mb-4 px-2">
+          <div className="synergy-icon-circle">
+            <Users size={18} />
+          </div>
+          <div className="synergy-text-primary">
+            {item.suggestion}
+          </div>
+        </div>
+      );
+    };
+
+    return (
+      <React.Fragment>
+        <tr className="h-4"></tr>
+        <tr>
+          <td colSpan="10" className="p-0 border-none">
+            <div className={cardClass}>
+              {/* Header Gradient */}
+              <div className={`synergy-card-header-gradient ${scenario === 'overflow' ? 'synergy-gradient-warning' : scenario === 'reference' ? 'synergy-gradient-reference' : ''}`}></div>
+              <div className={badge.className}>
+                <span>{badge.text}</span>
+              </div>
+
+              <div className="p-6 pt-10">
+                {renderMessage()}
+
+                <table className="w-full border-separate border-spacing-y-2">
+                  <tbody>
+                    {item.courses.map(course => <Row key={course.id} row={course} />)}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </td>
+        </tr>
+        <tr className="h-4"></tr>
+      </React.Fragment>
+    );
+  };
+
   return (
     <div className="w-full">
       <table className="w-full text-left border-separate border-spacing-y-4">
@@ -116,44 +207,7 @@ const CoursesTable = ({ data }) => {
         <tbody className="text-sm">
           {data.map((item) => {
             if (item.type === 'group') {
-                return (
-                    <React.Fragment key={item.id}>
-                        <tr className="h-4"></tr> 
-                        <tr>
-                            <td colSpan="10" className="p-0 border-none">
-                                <div className="synergy-card">
-                                    
-                                    {/* Header Badge */}
-                                    <div className="synergy-card-header-gradient"></div>
-                                    <div className="synergy-card-badge">
-                                        <span>✨ AGRUPACIÓN RECOMENDADA</span>
-                                    </div>
-
-                                    <div className="p-6 pt-10">
-                                        <div className="flex items-center gap-3 mb-4 px-2">
-                                            <div className="synergy-icon-circle">
-                                                <Users size={18} />
-                                            </div>
-                                            <div className="synergy-text-primary">
-                                                Oportunidad de optimización detectada:
-                                                <span className="font-bold ml-1">
-                                                    {item.courses[1]?.inscritos || 1} alumno(s) de MAS ➔ Curso ASPY
-                                                </span>
-                                            </div>
-                                        </div>
-
-                                        <table className="w-full border-separate border-spacing-y-2">
-                                            <tbody>
-                                                {item.courses.map(course => <Row key={course.id} row={course} />)}
-                                            </tbody>
-                                        </table>
-                                    </div>
-                                </div>
-                            </td>
-                        </tr>
-                        <tr className="h-4"></tr>
-                    </React.Fragment>
-                );
+              return <SynergyGroup key={item.id} item={item} />;
             }
             return <Row key={item.id} row={item} />;
           })}

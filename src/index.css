@@ -477,6 +477,60 @@ table tbody tr td {
   font-weight: 500;
 }
 
+/* === Synergy Card Variants === */
+
+/* Escenario C: Overflow / Warning */
+.synergy-card-warning {
+  border-color: #f59e0b; /* amber-500 */
+  background-color: #fffbeb; /* amber-50 */
+  box-shadow: 0 10px 15px -3px rgba(245, 158, 11, 0.15), 0 4px 6px -2px rgba(245, 158, 11, 0.1);
+}
+
+.synergy-gradient-warning {
+  background: linear-gradient(90deg, #fbbf24, #f59e0b, #fbbf24) !important;
+}
+
+.synergy-card-badge-warning {
+  background-color: #d97706 !important; /* amber-600 */
+}
+
+.synergy-icon-warning {
+  background-color: #fef3c7 !important; /* amber-100 */
+  color: #92400e !important; /* amber-800 */
+}
+
+.synergy-text-warning {
+  color: #92400e; /* amber-800 */
+  font-size: 0.875rem;
+  font-weight: 600;
+}
+
+/* 0-Enrolled: Reference Group */
+.synergy-card-reference {
+  border-color: #3b82f6; /* blue-500 */
+  background-color: #eff6ff; /* blue-50 */
+  box-shadow: 0 10px 15px -3px rgba(59, 130, 246, 0.15), 0 4px 6px -2px rgba(59, 130, 246, 0.1);
+}
+
+.synergy-gradient-reference {
+  background: linear-gradient(90deg, #60a5fa, #3b82f6, #60a5fa) !important;
+}
+
+.synergy-card-badge-reference {
+  background-color: #2563eb !important; /* blue-600 */
+}
+
+.synergy-icon-reference {
+  background-color: #dbeafe !important; /* blue-100 */
+  color: #1e40af !important; /* blue-800 */
+}
+
+.synergy-text-reference {
+  color: #1e40af; /* blue-800 */
+  font-size: 0.875rem;
+  font-weight: 600;
+}
+
 /* Individual Course Card Styles */
 .course-row {
   /* Preserve table row behavior for column alignment */

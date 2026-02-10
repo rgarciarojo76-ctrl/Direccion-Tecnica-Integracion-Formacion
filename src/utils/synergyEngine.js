@@ -1,17 +1,19 @@
 
 /**
- * Synergy Engine
+ * Synergy Engine v1.0.0
  * Finds optimization opportunities between MAS and ASPY courses.
  * 
- * Criteria:
- * 1. MAS course with low enrollment (e.g., < 3 students).
- * 2. ASPY course in same location.
- * 3. ASPY course with similar start date (+/- 14 days).
- * 4. ASPY course with similar title/topic.
- * 5. ASPY course has available slots.
+ * Rules:
+ * 1. Priority: The company with more "Inscritos" is the "Anfitriona" (Host).
+ * 2. Capacity Validation:
+ *    A) If Anfitriona has enough slots → recommend transfer.
+ *    B) If swapping roles makes it fit → recommend permuted transfer.
+ *    C) If neither fits → "Agrupación no recomendada".
+ * 3. Zero-enrolled filter: If either company has 0 inscritos, 
+ *    no transfer arrow is shown. Mark as "Grupo de Referencia en la zona".
  */
 
-console.log("Synergy Engine v0.8.0 Loaded - Strict Keywords Active");
+console.log("Synergy Engine v1.0.0 Loaded - Capacity Validation Active");
 
 const KEYWORD_MAP = {
     // Carretillas (Forklifts)
@@ -23,8 +25,6 @@ const KEYWORD_MAP = {
     // Plataformas (PEMP / Mobile Elevating Work Platforms)
     'plataforma': 'pemp',
     'pemp': 'pemp',
-    // 'elevadora': 'pemp', // REMOVED: Managed manually in logic to avoid conflict with Carretilla
-
 
     // General Safety (Resources)
     'recurso': 'preventivo',
@@ -48,14 +48,14 @@ const KEYWORD_MAP = {
 
     // Electrical
     'electric': 'electric',
-    'tensión': 'electric', // Riesgo eléctrico / Alta tensión
+    'tensión': 'electric',
 
     // Office/Ergonomics
     'oficina': 'pantalla',
     'pantalla': 'pantalla',
     
     // Others
-    'riesgo': 'riesgo' // Generic, might need refinement
+    'riesgo': 'riesgo'
 };
 
 const getKeywords = (title) => {
@@ -74,13 +74,10 @@ const getKeywords = (title) => {
         found.add('pemp');
     }
 
-    // 2. Loop through Map (excluding the above specific logic keys if needed, but Set handles dups)
+    // 2. Loop through Map
     for (const [key, value] of Object.entries(KEYWORD_MAP)) {
         if (normalized.includes(key)) {
-            // Safety: If it matched 'carretilla', do NOT accept 'elevadora' or 'pemp' from map
-            // Ideally 'elevadora' should be removed from map or handled strictly
             if (key === 'elevadora') {
-                 // Only treat 'elevadora' as 'pemp' if NOT carretilla
                  if (!found.has('carretilla')) {
                      found.add('pemp'); 
                  }
@@ -96,76 +93,154 @@ const getKeywords = (title) => {
 const areSimilar = (t1, t2) => {
     const k1 = getKeywords(t1);
     const k2 = getKeywords(t2);
-    // At least one matching keyword
     return k1.some(k => k2.includes(k));
 };
 
+
+/**
+ * Core synergy detection with capacity validation.
+ * 
+ * @param {Array} allCourses - All parsed courses (MAS + ASPY).
+ * @returns {Array} Array of group objects with scenarioType.
+ */
 export const findOptimizations = (allCourses) => {
-    const masCourses = allCourses.filter(c => c.source === 'MAS' && !c.hasSynergy); // Filter out already processed if any
-    const aspyCourses = allCourses.filter(c => c.source === 'ASPY');
-
-    const optimizedGroups = []; // Array of groups or single courses
+    const validCourses = allCourses.filter(c => c.ubicacion && c.startDateRaw);
     const processedIds = new Set();
+    const optimizedGroups = [];
 
-    // Sort MAS courses by date to process soonest first
-    masCourses.sort((a, b) => a.startDateRaw - b.startDateRaw);
+    // Sort by date to process soonest first
+    validCourses.sort((a, b) => a.startDateRaw - b.startDateRaw);
 
-    for (const masCourse of masCourses) {
-        if (processedIds.has(masCourse.id)) continue;
+    for (let i = 0; i < validCourses.length; i++) {
+        const courseA = validCourses[i];
+        if (processedIds.has(courseA.id)) continue;
 
-        // Skip if enrollment is high (e.g., > 4, flexible)
-        // User example said "1 inscrito", so let's target low numbers.
-        // Let's say < 4 is a good candidate for merging.
-        // Although the user prompt implies ALWAYS looking for a match if feasible.
-        
         let bestMatch = null;
         let bestScore = -1;
 
-        for (const aspyCourse of aspyCourses) {
-            if (processedIds.has(aspyCourse.id)) continue;
+        for (let j = i + 1; j < validCourses.length; j++) {
+            const courseB = validCourses[j];
+            if (processedIds.has(courseB.id)) continue;
 
-            // 1. Location Match
-            if (masCourse.ubicacion !== aspyCourse.ubicacion) continue;
+            // Must be different companies (MAS ↔ ASPY)
+            if (courseA.source === courseB.source) continue;
 
-            // 2. Date Match (+/- 15 days)
-            const daysDiff = Math.abs((masCourse.startDateRaw - aspyCourse.startDateRaw) / (1000 * 60 * 60 * 24));
+            // 1. Location Match (same province)
+            if (courseA.ubicacion !== courseB.ubicacion) continue;
+
+            // 2. Same week match (±7 days as fallback)
+            const daysDiff = Math.abs((courseA.startDateRaw - courseB.startDateRaw) / (1000 * 60 * 60 * 24));
             if (daysDiff > 15) continue;
 
-            // 3. Status Check (ASPY must have slots)
-            if (aspyCourse.plazas <= 0) continue;
-
-            // 4. Topic/Title Match
-            if (!areSimilar(masCourse.title, aspyCourse.title)) continue;
+            // 3. Topic/Title Match
+            if (!areSimilar(courseA.title, courseB.title)) continue;
 
             // Calculate Score (closer date = better)
-            const score = 100 - daysDiff; 
+            const score = 100 - daysDiff;
 
             if (score > bestScore) {
                 bestScore = score;
-                bestMatch = aspyCourse;
+                bestMatch = courseB;
             }
         }
 
         if (bestMatch) {
-            // Found a Synergy!
-            processedIds.add(masCourse.id);
+            processedIds.add(courseA.id);
             processedIds.add(bestMatch.id);
-            
-            optimizedGroups.push({
-                type: 'group',
-                id: `group-${masCourse.id}-${bestMatch.id}`,
-                courses: [bestMatch, masCourse].sort((a, b) => a.startDateRaw - b.startDateRaw), // Sort internal group by date
-                suggestion: `Agrupación Recomendada: ${masCourse.ubicacion} (${bestMatch.startDatefmt} / ${masCourse.startDatefmt})`
-            });
-        } else {
-            // No match found, push as single regular item (will be handled by main list if we return full structure)
-            // Actually, the main list in App.jsx renders everything. 
-            // We need a way to tell App.jsx which ones are grouped.
+
+            const group = buildSynergyGroup(courseA, bestMatch);
+            optimizedGroups.push(group);
         }
     }
 
     return optimizedGroups;
 };
+
+/**
+ * Builds a synergy group object applying all three rules:
+ * 1. Priority (higher inscritos = Anfitriona)
+ * 2. Capacity validation (Scenarios A, B, C)
+ * 3. Zero-enrolled filter
+ */
+function buildSynergyGroup(c1, c2) {
+    const inscritosA = Number(c1.inscritos) || 0;
+    const inscritosB = Number(c2.inscritos) || 0;
+
+    // === RULE 3: Zero-enrolled filter ===
+    if (inscritosA === 0 || inscritosB === 0) {
+        // The course WITH inscritos is the reference group
+        const reference = inscritosA > 0 ? c1 : (inscritosB > 0 ? c2 : c1);
+        const other = reference === c1 ? c2 : c1;
+        return {
+            type: 'group',
+            id: `group-${c1.id}-${c2.id}`,
+            courses: [reference, other],
+            scenarioType: 'reference',
+            suggestion: `Grupo de Referencia en la zona`,
+            anfitriona: reference,
+            emisora: other,
+            alumnosToMove: 0
+        };
+    }
+
+    // === RULE 1: Priority — higher inscritos = Anfitriona ===
+    let anfitriona, emisora;
+    if (inscritosA >= inscritosB) {
+        anfitriona = c1;
+        emisora = c2;
+    } else {
+        anfitriona = c2;
+        emisora = c1;
+    }
+
+    const anfitDisponibles = Number(anfitriona.plazas) || 0;
+    const emisoraInscritos = Number(emisora.inscritos) || 0;
+    const emisoraDisponibles = Number(emisora.plazas) || 0;
+    const anfitInscritos = Number(anfitriona.inscritos) || 0;
+
+    // === RULE 2: Capacity validation ===
+
+    // Escenario A: Anfitriona has enough room for all Emisora students
+    if (anfitDisponibles >= emisoraInscritos) {
+        return {
+            type: 'group',
+            id: `group-${c1.id}-${c2.id}`,
+            courses: [anfitriona, emisora],
+            scenarioType: 'optimal',
+            suggestion: `Oportunidad de optimización detectada: ${emisoraInscritos} alumno(s) de ${emisora.source} ➔ Curso ${anfitriona.source}`,
+            anfitriona,
+            emisora,
+            alumnosToMove: emisoraInscritos
+        };
+    }
+
+    // Escenario B: Swap roles — check if Emisora has more room than Anfitriona
+    if (emisoraDisponibles > anfitDisponibles && emisoraDisponibles >= anfitInscritos) {
+        // Swap: the one with more room becomes the new Anfitriona
+        return {
+            type: 'group',
+            id: `group-${c1.id}-${c2.id}`,
+            courses: [emisora, anfitriona], // Swapped order
+            scenarioType: 'permuted',
+            suggestion: `Oportunidad de optimización detectada: ${anfitInscritos} alumno(s) de ${anfitriona.source} ➔ Curso ${emisora.source}`,
+            anfitriona: emisora,   // Swapped
+            emisora: anfitriona,   // Swapped
+            alumnosToMove: anfitInscritos
+        };
+    }
+
+    // Escenario C: Neither direction works — overflow
+    return {
+        type: 'group',
+        id: `group-${c1.id}-${c2.id}`,
+        courses: [anfitriona, emisora],
+        scenarioType: 'overflow',
+        suggestion: `Agrupación no recomendada por superar el número máximo de alumnos de las dos compañías`,
+        anfitriona,
+        emisora,
+        alumnosToMove: 0
+    };
+}
 
 // Helper to inject grouping info into the flat list
 export const processCourseListWithGroups = (rawCourses) => {
