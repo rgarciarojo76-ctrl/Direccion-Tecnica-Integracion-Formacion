@@ -666,15 +666,15 @@ table tbody tr td {
 }
 
 .course-card-mas {
-  background-color: #f3e8ff; /* Soft violet */
-  border-left: 4px solid #7c3aed; /* MAS corporate purple */
+  background-color: #e8eef4; /* Soft steel blue — MAS corporate */
+  border-left: 4px solid #5b7fa5; /* MAS corporate blue */
   border-radius: 12px;
   transition: all 0.2s ease;
-  box-shadow: 0 1px 3px rgba(124, 58, 237, 0.1);
+  box-shadow: 0 1px 3px rgba(91, 127, 165, 0.1);
 }
 .course-card-mas:hover {
-  background-color: #ede0ff;
-  box-shadow: 0 4px 12px rgba(124, 58, 237, 0.15);
+  background-color: #dce5ee;
+  box-shadow: 0 4px 12px rgba(91, 127, 165, 0.15);
   transform: translateY(-1px);
 }
 
