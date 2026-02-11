@@ -104,6 +104,14 @@ export const loadData = async () => {
         return cDate >= today;
     });
 
+    // TEMPORARY: Data overrides for presentation demo
+    combined = combined.map(c => {
+        if (c.id === 'MAS-208209') {
+            return { ...c, inscritos: 1, plazas: c.plazas_max - 1 };
+        }
+        return c;
+    });
+
     // Detect Synergies (Before sort logic or irrelevant, but keeping data processing together)
     // Note: Imported from separate module in App.jsx now, but kept here if used internally?
     // Actually typically invoked in App.jsx. Removing specific call here to rely on App.jsx flow 
