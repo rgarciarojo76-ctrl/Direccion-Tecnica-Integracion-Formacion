@@ -45,8 +45,8 @@ const KEYWORD_MAP = {
     'incendio': 'incendio',
     'emergencia': 'emergencia',
 
-    // PRL Metal / Construction (specific)
-    'metal': 'prl_metal',
+    // PRL Metal / Construction (specific - use multi-word)
+    'sector metal': 'prl_metal',
     'construccion': 'prl_construccion',
 
     // Machinery

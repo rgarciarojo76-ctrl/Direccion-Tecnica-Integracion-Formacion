@@ -93,8 +93,12 @@ export const loadData = async () => {
     const today = new Date('2026-02-09T00:00:00');
     today.setHours(0, 0, 0, 0);
     
+    // TEMPORARY: Exclude specific courses for presentation demo
+    const EXCLUDED_IDS = ['ASPY-33493', 'MAS-207640'];
+
     combined = combined.filter(c => {
         if (!c.startDateRaw) return false;
+        if (EXCLUDED_IDS.includes(c.id)) return false;
         const cDate = new Date(c.startDateRaw);
         cDate.setHours(0, 0, 0, 0);
         return cDate >= today;
