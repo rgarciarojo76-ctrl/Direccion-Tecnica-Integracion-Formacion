@@ -107,7 +107,7 @@ export const loadData = async () => {
     // TEMPORARY: Data overrides for presentation demo
     combined = combined.map(c => {
         if (c.id === 'MAS-208209') {
-            return { ...c, inscritos: 1, plazas: c.plazas_max - 1 };
+            return { ...c, inscritos: 1, plazas: 3 };
         }
         return c;
     });
