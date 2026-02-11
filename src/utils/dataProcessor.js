@@ -89,8 +89,8 @@ export const loadData = async () => {
     // Combine
     let combined = [...aspyData, ...masData];
     
-    // Filter past courses (keep today and future)
-    const today = new Date();
+    // TEMPORARY: Frozen date for presentation demo (revert to new Date() after)
+    const today = new Date('2026-02-09T00:00:00');
     today.setHours(0, 0, 0, 0);
     
     combined = combined.filter(c => {
