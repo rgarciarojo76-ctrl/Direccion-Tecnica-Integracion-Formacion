@@ -58,7 +58,7 @@ function App() {
       };
 
       if (filters.showSynergiesOnly) {
-          return item.type === 'group';
+          return item.type === 'group' && item.courses.some(checkCourse);
       }
 
       if (item.type === 'group') {
