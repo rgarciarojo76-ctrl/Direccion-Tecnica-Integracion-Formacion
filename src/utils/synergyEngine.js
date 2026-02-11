@@ -26,36 +26,43 @@ const KEYWORD_MAP = {
     'plataforma': 'pemp',
     'pemp': 'pemp',
 
-    // General Safety (Resources)
+    // PRL Specific (multi-word match handled in getKeywords)
+    'recurso preventivo': 'preventivo',
     'recurso': 'preventivo',
-    'prl': 'prl',
-    'basico': 'prl_basico',
 
     // Heights
     'altura': 'altura',
     'vertical': 'altura',
 
-    // Emergencies
-    'primeros': 'auxilios',
-    'espacio': 'confinado',
-    'fuego': 'extincion',
+    // First Aid / Emergency
+    'primeros auxilios': 'auxilios',
+    'soporte vital': 'soporte_vital',
+    'desfibrilador': 'soporte_vital',
+    'reanimacion': 'soporte_vital',
+    'espacio confinado': 'confinado',
+    'extincion': 'extincion',
+    'extintor': 'extincion',
     'incendio': 'incendio',
     'emergencia': 'emergencia',
 
+    // PRL Metal / Construction (specific)
+    'metal': 'prl_metal',
+    'construccion': 'prl_construccion',
+
     // Machinery
-    'puente': 'grua',
+    'puente grua': 'grua',
     'grua': 'grua',
 
     // Electrical
-    'electric': 'electric',
-    'tensión': 'electric',
+    'electrico': 'electrico',
+    'electrica': 'electrico',
+    'tension': 'electrico',
 
     // Office/Ergonomics
     'oficina': 'pantalla',
-    'pantalla': 'pantalla',
-    
-    // Others
-    'riesgo': 'riesgo'
+    'pantalla': 'pantalla'
+
+    // REMOVED: 'basico' and 'riesgo' - too generic, caused false matches
 };
 
 const getKeywords = (title) => {
