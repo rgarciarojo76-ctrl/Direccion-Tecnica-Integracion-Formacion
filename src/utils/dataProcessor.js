@@ -94,7 +94,7 @@ export const loadData = async () => {
     today.setHours(0, 0, 0, 0);
     
     // TEMPORARY: Exclude specific courses for presentation demo
-    const EXCLUDED_IDS = ['ASPY-33493', 'MAS-207640'];
+    const EXCLUDED_IDS = ['ASPY-33493', 'MAS-207640', 'ASPY-32973', 'MAS-211325'];
 
     combined = combined.filter(c => {
         if (!c.startDateRaw) return false;
