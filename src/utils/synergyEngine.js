@@ -108,12 +108,25 @@ const areSimilar = (t1, t2) => {
  * Core synergy detection with capacity validation.
  * 
  * @param {Array} allCourses - All parsed courses (MAS + ASPY).
+ * @param {Array} dictionary - Manual synergy pairs [{aspyTitle, masTitle}].
  * @returns {Array} Array of group objects with scenarioType.
  */
-export const findOptimizations = (allCourses) => {
+export const findOptimizations = (allCourses, dictionary = []) => {
     const validCourses = allCourses.filter(c => c.ubicacion && c.startDateRaw);
     const processedIds = new Set();
     const optimizedGroups = [];
+    
+    // Build dictionary lookup set for O(1) checks
+    // Key format: "ASPY_TITLE_LOWER|MAS_TITLE_LOWER"
+    const dictionarySet = new Set();
+    if (dictionary && dictionary.length > 0) {
+        dictionary.forEach(pair => {
+            if (pair.aspyTitle && pair.masTitle) {
+                const key = `${pair.aspyTitle.trim().toLowerCase()}|${pair.masTitle.trim().toLowerCase()}`;
+                dictionarySet.add(key);
+            }
+        });
+    }
 
     // Sort by date to process soonest first
     validCourses.sort((a, b) => a.startDateRaw - b.startDateRaw);
@@ -139,11 +152,28 @@ export const findOptimizations = (allCourses) => {
             const daysDiff = Math.abs((courseA.startDateRaw - courseB.startDateRaw) / (1000 * 60 * 60 * 24));
             if (daysDiff > 15) continue;
 
-            // 3. Topic/Title Match
-            if (!areSimilar(courseA.title, courseB.title)) continue;
+            // 3. Match Logic: Dictionary OR Fuzzy
+            let isDictMatch = false;
+            let isFuzzyMatch = false;
 
-            // Calculate Score (closer date = better)
-            const score = 100 - daysDiff;
+            // Check dictionary exact match
+            const aspyC = courseA.source === 'ASPY' ? courseA : courseB;
+            const masC = courseA.source === 'MAS' ? courseA : courseB;
+            const key = `${aspyC.title.trim().toLowerCase()}|${masC.title.trim().toLowerCase()}`;
+            
+            if (dictionarySet.has(key)) {
+                isDictMatch = true;
+            } else {
+                // If not in dictionary, check fuzzy
+                isFuzzyMatch = areSimilar(courseA.title, courseB.title);
+            }
+
+            if (!isDictMatch && !isFuzzyMatch) continue;
+
+            // Calculate Score 
+            // Dictionary matches get a massive bonus to override any fuzzy logic
+            let baseScore = isDictMatch ? 200 : 100; 
+            const score = baseScore - daysDiff;
 
             if (score > bestScore) {
                 bestScore = score;
@@ -266,12 +296,12 @@ function buildSynergyGroup(c1, c2) {
 }
 
 // Helper to inject grouping info into the flat list
-export const processCourseListWithGroups = (rawCourses) => {
+export const processCourseListWithGroups = (rawCourses, dictionary = []) => {
     // 1. Reset synergy flags
     const courses = rawCourses.map(c => ({...c, isGrouped: false, groupData: null }));
     
     // 2. Find groups
-    const optimizations = findOptimizations(courses);
+    const optimizations = findOptimizations(courses, dictionary);
     
     if (optimizations.length === 0) return courses;
 

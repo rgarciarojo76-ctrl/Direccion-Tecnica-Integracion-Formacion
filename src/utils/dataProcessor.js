@@ -4,6 +4,7 @@ import { read, utils } from 'xlsx';
 // FILE PATHS (In public folder)
 const ASPY_FILE = '/data/aspy_blue_2026.xlsx';
 const MAS_FILE = '/data/mas_2026.xls';
+const DICT_FILE = '/data/diccionario_sinergias_final.xlsx';
 
 // KEY MAPPINGS
 const TOPIC_MAP = {
@@ -332,6 +333,27 @@ const fetchAndParseMAS = async () => {
     const json = utils.sheet_to_json(ws, { header: 1, cellDates: true }).slice(1);
 
     return json.map(row => parseRow(row, 'MAS')).filter(Boolean);
+};
+
+export const loadSynergyDictionary = async () => {
+    try {
+        const file = await fetch(DICT_FILE);
+        if (!file.ok) throw new Error("Dictionary file not found");
+        
+        const buffer = await file.arrayBuffer();
+        const wb = read(buffer, { type: 'array' });
+        const ws = wb.Sheets[wb.SheetNames[0]];
+        // Assume format: [ASPY Title, MAS Title, Keywords]
+        const json = utils.sheet_to_json(ws, { header: 1 }).slice(1);
+        
+        return json.map(row => ({
+            aspyTitle: cleanTitle(row[0]),
+            masTitle: cleanTitle(row[1])
+        })).filter(pair => pair.aspyTitle && pair.masTitle);
+    } catch (e) {
+        console.warn("Could not load synergy dictionary:", e);
+        return [];
+    }
 };
 
 

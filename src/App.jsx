@@ -3,7 +3,7 @@ import { Download, Layout } from 'lucide-react';
 
 import FilterBar from './components/FilterBar';
 import CoursesTable from './components/CoursesTable';
-import { loadData } from './utils/dataProcessor';
+import { loadData, loadSynergyDictionary } from './utils/dataProcessor';
 import { processCourseListWithGroups } from './utils/synergyEngine';
 import { exportToExcel, exportToPDF } from './utils/exportUtils';
 import './App.css';
@@ -73,8 +73,11 @@ function App() {
   useEffect(() => {
     const fetchData = async () => {
       setLoading(true);
-      const rawData = await loadData();
-      const processed = processCourseListWithGroups(rawData);
+      const [rawData, dictionary] = await Promise.all([
+        loadData(),
+        loadSynergyDictionary()
+      ]);
+      const processed = processCourseListWithGroups(rawData, dictionary);
       setData(processed);
       setLoading(false);
     };
