@@ -165,9 +165,8 @@ function App() {
         {/* KPI DASHBOARD */}
         {!loading && <KPIDashboard data={filteredData} />}
 
-        {/* FILTERS & TOOLBAR */}
-        <div className="card p-6 mb-6 bg-white rounded-2xl shadow-sm border border-slate-100">
-           <h3 className="text-lg font-semibold text-slate-700 mb-4">Filtros de Búsqueda</h3>
+        {/* FILTERS */}
+        <div className="card p-4 mb-4 bg-white rounded-xl shadow-sm border border-slate-100">
            <FilterBar 
              filters={filters} 
              onFilterChange={handleFilterChange} 

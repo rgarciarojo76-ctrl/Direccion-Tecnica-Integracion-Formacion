@@ -54,7 +54,7 @@ const ALL_KNOWN_SCENARIOS = ['optimal', 'permuted', 'reference_potential', 'refe
 const KPIDashboard = ({ data }) => {
   const [hoveredCard, setHoveredCard] = useState(null);
 
-  const { metrics, totals } = useMemo(() => {
+  const metrics = useMemo(() => {
     // Get ALL groups from the current data
     const allGroups = data.filter(item => item.type === 'group');
     const individualCourses = data.filter(item => item.type !== 'group');
@@ -102,9 +102,8 @@ const KPIDashboard = ({ data }) => {
       };
     });
 
-    // Compute totals for verification bar
+    // Compute totals for cross-check
     const totalGroupsCounted = computedMetrics.reduce((s, m) => s + m.groupCount, 0);
-    const totalAlumnosCounted = computedMetrics.reduce((s, m) => s + m.totalAlumnos, 0);
     
     // Cross-check: do counted groups = actual groups?
     if (totalGroupsCounted !== allGroups.length) {
@@ -113,88 +112,65 @@ const KPIDashboard = ({ data }) => {
       console.log(`[KPI Dashboard] ✅ All ${allGroups.length} groups accounted for.`);
     }
 
-    return { 
-      metrics: computedMetrics, 
-      totals: { 
-        groups: totalGroupsCounted, 
-        actualGroups: allGroups.length,
-        alumnos: totalAlumnosCounted 
-      }
-    };
+    return computedMetrics;
   }, [data]);
 
   return (
-    <div>
-      {/* Summary bar */}
-      <div className="kpi-summary-bar">
-        <span className="kpi-summary-text">
-          📊 Resumen de Sinergias: <strong>{totals.groups}</strong> {totals.groups === 1 ? 'agrupación' : 'agrupaciones'} detectadas · <strong>{totals.alumnos}</strong> alumnos implicados
-        </span>
-      </div>
-
-      {/* Cards */}
-      <div className="kpi-dashboard-grid">
-        {metrics.map(m => {
-          const Icon = m.icon;
-          const isHovered = hoveredCard === m.key;
-          
-          return (
-            <div
-              key={m.key}
-              className="kpi-card-pro"
-              style={{
-                borderLeft: `4px solid ${m.borderColor}`,
-                background: m.bgGradient,
-              }}
-              onMouseEnter={() => setHoveredCard(m.key)}
-              onMouseLeave={() => setHoveredCard(null)}
-            >
-              {/* Header */}
-              <div className="kpi-card-header">
-                <div className="kpi-card-icon" style={{ backgroundColor: m.iconBg, color: m.color }}>
-                  <Icon size={18} />
-                </div>
+    <div className="kpi-dashboard-grid">
+      {metrics.map(m => {
+        const Icon = m.icon;
+        const isHovered = hoveredCard === m.key;
+        
+        return (
+          <div
+            key={m.key}
+            className="kpi-card-pro"
+            style={{
+              borderLeft: `4px solid ${m.borderColor}`,
+              background: m.bgGradient,
+            }}
+            onMouseEnter={() => setHoveredCard(m.key)}
+            onMouseLeave={() => setHoveredCard(null)}
+          >
+            <div className="kpi-card-compact">
+              <div className="kpi-card-icon" style={{ backgroundColor: m.iconBg, color: m.color }}>
+                <Icon size={16} />
+              </div>
+              <div className="kpi-card-body">
                 <span className="kpi-card-label" style={{ color: m.color }}>
                   {m.label}
                 </span>
-              </div>
-
-              {/* Metrics */}
-              <div className="kpi-card-metrics">
-                <div className="kpi-metric-main">
+                <div className="kpi-card-numbers">
                   <span className="kpi-metric-value" style={{ color: m.color }}>
                     {m.groupCount}
                   </span>
-                  <span className="kpi-metric-unit">
-                    {m.groupCount === 1 ? 'grupo' : 'grupos'}
-                  </span>
-                </div>
-                <div className="kpi-metric-secondary">
-                  <Users size={14} className="kpi-metric-icon" />
+                  <span className="kpi-metric-unit">grupos</span>
+                  <span className="kpi-metric-sep">·</span>
+                  <Users size={12} className="kpi-metric-icon" />
                   <span className="kpi-metric-alumnos">{m.totalAlumnos}</span>
                   <span className="kpi-metric-unit-sm">alumnos</span>
                 </div>
               </div>
-
-              {/* Hover tooltip */}
-              {isHovered && m.groupCount > 0 && (
-                <div className="kpi-tooltip">
-                  <div className="kpi-tooltip-row">
-                    <span className="kpi-tooltip-label">ASPY:</span>
-                    <span className="kpi-tooltip-value">{m.aspyAlumnos} alumnos</span>
-                  </div>
-                  <div className="kpi-tooltip-row">
-                    <span className="kpi-tooltip-label">MAS:</span>
-                    <span className="kpi-tooltip-value">{m.masAlumnos} alumnos</span>
-                  </div>
-                  <div className="kpi-tooltip-divider"></div>
-                  <div className="kpi-tooltip-desc">{m.description}</div>
-                </div>
-              )}
             </div>
-          );
-        })}
-      </div>
+
+            {/* Hover tooltip */}
+            {isHovered && m.groupCount > 0 && (
+              <div className="kpi-tooltip">
+                <div className="kpi-tooltip-row">
+                  <span className="kpi-tooltip-label">ASPY:</span>
+                  <span className="kpi-tooltip-value">{m.aspyAlumnos} alumnos</span>
+                </div>
+                <div className="kpi-tooltip-row">
+                  <span className="kpi-tooltip-label">MAS:</span>
+                  <span className="kpi-tooltip-value">{m.masAlumnos} alumnos</span>
+                </div>
+                <div className="kpi-tooltip-divider"></div>
+                <div className="kpi-tooltip-desc">{m.description}</div>
+              </div>
+            )}
+          </div>
+        );
+      })}
     </div>
   );
 };
