@@ -3,6 +3,7 @@ import { Download, Layout } from 'lucide-react';
 
 import FilterBar from './components/FilterBar';
 import CoursesTable from './components/CoursesTable';
+import KPIDashboard from './components/KPIDashboard';
 import { loadData, loadSynergyDictionary } from './utils/dataProcessor';
 import { processCourseListWithGroups } from './utils/synergyEngine';
 import { exportToExcel, exportToPDF } from './utils/exportUtils';
@@ -161,6 +162,9 @@ function App() {
       </div>
 
       <main className="max-w-7xl mx-auto px-6 py-8">
+        {/* KPI DASHBOARD */}
+        {!loading && <KPIDashboard data={filteredData} />}
+
         {/* FILTERS & TOOLBAR */}
         <div className="card p-6 mb-6 bg-white rounded-2xl shadow-sm border border-slate-100">
            <h3 className="text-lg font-semibold text-slate-700 mb-4">Filtros de Búsqueda</h3>
