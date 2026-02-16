@@ -187,8 +187,18 @@ export const findOptimizations = (allCourses, dictionary = []) => {
 
             const group = buildSynergyGroup(courseA, bestMatch);
             optimizedGroups.push(group);
+            
+            // Diagnostic log for each group
+            console.log(`[Synergy] Group ${optimizedGroups.length}: ${group.scenarioType} | ${courseA.source} "${courseA.title.substring(0,40)}" (${courseA.inscritos} ins) ↔ ${bestMatch.source} "${bestMatch.title.substring(0,40)}" (${bestMatch.inscritos} ins) | ${courseA.ubicacion}`);
         }
     }
+
+    // Summary log
+    const summary = {};
+    optimizedGroups.forEach(g => {
+        summary[g.scenarioType] = (summary[g.scenarioType] || 0) + 1;
+    });
+    console.log(`[Synergy Engine] Total groups: ${optimizedGroups.length}`, summary);
 
     return optimizedGroups;
 };

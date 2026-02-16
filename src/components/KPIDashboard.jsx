@@ -1,5 +1,5 @@
 import React, { useMemo, useState } from 'react';
-import { CheckCircle2, Clock, AlertTriangle, XOctagon, Users, TrendingUp } from 'lucide-react';
+import { CheckCircle2, Clock, AlertTriangle, XOctagon, Users } from 'lucide-react';
 
 const CATEGORIES = [
   {
@@ -48,14 +48,37 @@ const CATEGORIES = [
   },
 ];
 
+// All known scenario types - used for verification
+const ALL_KNOWN_SCENARIOS = ['optimal', 'permuted', 'reference_potential', 'reference_unlikely', 'overflow'];
+
 const KPIDashboard = ({ data }) => {
   const [hoveredCard, setHoveredCard] = useState(null);
 
-  const metrics = useMemo(() => {
-    const groups = data.filter(item => item.type === 'group');
+  const { metrics, totals } = useMemo(() => {
+    // Get ALL groups from the current data
+    const allGroups = data.filter(item => item.type === 'group');
+    const individualCourses = data.filter(item => item.type !== 'group');
 
-    return CATEGORIES.map(cat => {
-      const matchingGroups = groups.filter(g => cat.scenarios.includes(g.scenarioType));
+    // DEBUG: Log all group scenarioTypes for verification
+    const scenarioBreakdown = {};
+    allGroups.forEach(g => {
+      const st = g.scenarioType || 'UNDEFINED';
+      if (!scenarioBreakdown[st]) scenarioBreakdown[st] = 0;
+      scenarioBreakdown[st]++;
+    });
+    console.log(`[KPI Dashboard] Total items: ${data.length} | Groups: ${allGroups.length} | Individual: ${individualCourses.length}`);
+    console.log('[KPI Dashboard] Scenario breakdown:', scenarioBreakdown);
+
+    // Check for any unrecognized scenarios
+    Object.keys(scenarioBreakdown).forEach(s => {
+      if (!ALL_KNOWN_SCENARIOS.includes(s)) {
+        console.warn(`[KPI Dashboard] ⚠️ UNRECOGNIZED scenarioType: "${s}" — ${scenarioBreakdown[s]} groups will NOT be counted!`);
+      }
+    });
+
+    // Calculate metrics per category
+    const computedMetrics = CATEGORIES.map(cat => {
+      const matchingGroups = allGroups.filter(g => cat.scenarios.includes(g.scenarioType));
       
       let totalAlumnos = 0;
       let aspyAlumnos = 0;
@@ -78,71 +101,100 @@ const KPIDashboard = ({ data }) => {
         masAlumnos,
       };
     });
+
+    // Compute totals for verification bar
+    const totalGroupsCounted = computedMetrics.reduce((s, m) => s + m.groupCount, 0);
+    const totalAlumnosCounted = computedMetrics.reduce((s, m) => s + m.totalAlumnos, 0);
+    
+    // Cross-check: do counted groups = actual groups?
+    if (totalGroupsCounted !== allGroups.length) {
+      console.error(`[KPI Dashboard] ❌ MISMATCH! Counted ${totalGroupsCounted} groups across cards but found ${allGroups.length} groups in data.`);
+    } else {
+      console.log(`[KPI Dashboard] ✅ All ${allGroups.length} groups accounted for.`);
+    }
+
+    return { 
+      metrics: computedMetrics, 
+      totals: { 
+        groups: totalGroupsCounted, 
+        actualGroups: allGroups.length,
+        alumnos: totalAlumnosCounted 
+      }
+    };
   }, [data]);
 
-
   return (
-    <div className="kpi-dashboard-grid">
-      {metrics.map(m => {
-        const Icon = m.icon;
-        const isHovered = hoveredCard === m.key;
-        
-        return (
-          <div
-            key={m.key}
-            className="kpi-card-pro"
-            style={{
-              borderLeft: `4px solid ${m.borderColor}`,
-              background: m.bgGradient,
-            }}
-            onMouseEnter={() => setHoveredCard(m.key)}
-            onMouseLeave={() => setHoveredCard(null)}
-          >
-            {/* Header */}
-            <div className="kpi-card-header">
-              <div className="kpi-card-icon" style={{ backgroundColor: m.iconBg, color: m.color }}>
-                <Icon size={18} />
-              </div>
-              <span className="kpi-card-label" style={{ color: m.color }}>
-                {m.label}
-              </span>
-            </div>
+    <div>
+      {/* Summary bar */}
+      <div className="kpi-summary-bar">
+        <span className="kpi-summary-text">
+          📊 Resumen de Sinergias: <strong>{totals.groups}</strong> {totals.groups === 1 ? 'agrupación' : 'agrupaciones'} detectadas · <strong>{totals.alumnos}</strong> alumnos implicados
+        </span>
+      </div>
 
-            {/* Metrics */}
-            <div className="kpi-card-metrics">
-              <div className="kpi-metric-main">
-                <span className="kpi-metric-value" style={{ color: m.color }}>
-                  {m.groupCount}
-                </span>
-                <span className="kpi-metric-unit">
-                  {m.groupCount === 1 ? 'grupo' : 'grupos'}
+      {/* Cards */}
+      <div className="kpi-dashboard-grid">
+        {metrics.map(m => {
+          const Icon = m.icon;
+          const isHovered = hoveredCard === m.key;
+          
+          return (
+            <div
+              key={m.key}
+              className="kpi-card-pro"
+              style={{
+                borderLeft: `4px solid ${m.borderColor}`,
+                background: m.bgGradient,
+              }}
+              onMouseEnter={() => setHoveredCard(m.key)}
+              onMouseLeave={() => setHoveredCard(null)}
+            >
+              {/* Header */}
+              <div className="kpi-card-header">
+                <div className="kpi-card-icon" style={{ backgroundColor: m.iconBg, color: m.color }}>
+                  <Icon size={18} />
+                </div>
+                <span className="kpi-card-label" style={{ color: m.color }}>
+                  {m.label}
                 </span>
               </div>
-              <div className="kpi-metric-secondary">
-                <Users size={14} className="kpi-metric-icon" />
-                <span className="kpi-metric-alumnos">{m.totalAlumnos}</span>
-                <span className="kpi-metric-unit-sm">alumnos</span>
-              </div>
-            </div>
 
-            {/* Hover tooltip */}
-            {isHovered && m.groupCount > 0 && (
-              <div className="kpi-tooltip">
-                <div className="kpi-tooltip-row">
-                  <span className="kpi-tooltip-label">ASPY:</span>
-                  <span className="kpi-tooltip-value">{m.aspyAlumnos} alumnos</span>
+              {/* Metrics */}
+              <div className="kpi-card-metrics">
+                <div className="kpi-metric-main">
+                  <span className="kpi-metric-value" style={{ color: m.color }}>
+                    {m.groupCount}
+                  </span>
+                  <span className="kpi-metric-unit">
+                    {m.groupCount === 1 ? 'grupo' : 'grupos'}
+                  </span>
                 </div>
-                <div className="kpi-tooltip-row">
-                  <span className="kpi-tooltip-label">MAS:</span>
-                  <span className="kpi-tooltip-value">{m.masAlumnos} alumnos</span>
+                <div className="kpi-metric-secondary">
+                  <Users size={14} className="kpi-metric-icon" />
+                  <span className="kpi-metric-alumnos">{m.totalAlumnos}</span>
+                  <span className="kpi-metric-unit-sm">alumnos</span>
                 </div>
-                <div className="kpi-tooltip-divider"></div>
-                <div className="kpi-tooltip-desc">{m.description}</div>
               </div>
-            )}
-          </div>
-        );
-      })}
+
+              {/* Hover tooltip */}
+              {isHovered && m.groupCount > 0 && (
+                <div className="kpi-tooltip">
+                  <div className="kpi-tooltip-row">
+                    <span className="kpi-tooltip-label">ASPY:</span>
+                    <span className="kpi-tooltip-value">{m.aspyAlumnos} alumnos</span>
+                  </div>
+                  <div className="kpi-tooltip-row">
+                    <span className="kpi-tooltip-label">MAS:</span>
+                    <span className="kpi-tooltip-value">{m.masAlumnos} alumnos</span>
+                  </div>
+                  <div className="kpi-tooltip-divider"></div>
+                  <div className="kpi-tooltip-desc">{m.description}</div>
+                </div>
+              )}
+            </div>
+          );
+        })}
+      </div>
     </div>
   );
 };
