@@ -1,7 +1,7 @@
 import React from 'react';
-import { Search, MapPin, Calendar, Sparkles, Building2 } from 'lucide-react';
+import { Search, MapPin, Calendar, Sparkles, Building2, Upload } from 'lucide-react';
 
-const FilterBar = ({ filters, onFilterChange, uniqueTitles = [], uniqueLocations = [] }) => {
+const FilterBar = ({ filters, onFilterChange, uniqueTitles = [], uniqueLocations = [], onOpenUpload }) => {
   const handleChange = (e) => {
     const { name, value } = e.target;
     onFilterChange(name, value);
@@ -48,6 +48,19 @@ const FilterBar = ({ filters, onFilterChange, uniqueTitles = [], uniqueLocations
             <span className="toggle-slider-pro"></span>
             <span className="toggle-text-pro">Solo sinergias</span>
           </label>
+        </div>
+
+        {/* Upload Button (Spacer to push to right, or just next to it) */}
+        <div className="filter-group ml-auto">
+            {/* FEATURE HIDDEN BY REQUEST (2026-02-19)
+            <button 
+                className="btn-upload-program"
+                onClick={onOpenUpload}
+            >
+                <Upload size={16} />
+                Actualizar programación
+            </button>
+            */}
         </div>
 
       </div>

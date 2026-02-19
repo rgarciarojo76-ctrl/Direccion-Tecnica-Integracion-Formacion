@@ -1,9 +1,8 @@
 import { read, utils } from 'xlsx';
 
 // FILE PATHS (In public folder)
-// FILE PATHS (In public folder)
-const ASPY_FILE = '/data/aspy_blue_2026.xlsx';
-const MAS_FILE = '/data/mas_2026.xls';
+const ASPY_FILE = '/data/aspy_formacion.xlsx';
+const MAS_FILE = '/data/mas_formacion.xls';
 const DICT_FILE = '/data/diccionario_sinergias_final.xlsx';
 
 // KEY MAPPINGS
@@ -14,7 +13,7 @@ const TOPIC_MAP = {
   // Map typical MÁS topics if known, otherwise identity
   "SEGURIDAD": "Seguridad",
   "PRL": "PRL",
-  "METAL": "PRL" // Guessing based on "PRL DEL SECTOR DEL METAL"
+  "METAL": "PRL" 
 };
 
 // UTILS
@@ -41,33 +40,20 @@ const normalizeTopic = (text) => {
 // DATE UTILS
 const getJsDate = (value) => {
     if (value === undefined || value === null) return null;
-    
-    // If it's already a Date object
-    if (value instanceof Date) {
-        return value;
-    }
-
-    // If number (Excel serial date)
-    // Excel base date is Dec 30, 1899 (for PC) or Jan 1, 1904 (for Mac). 
-    // Usually 25569 is the offset for 1970-01-01.
+    if (value instanceof Date) return value;
     if (typeof value === 'number') {
-        // Basic check for reasonable date range (e.g. > 10000)
         if (value > 10000) {
            const date = new Date((value - 25569) * 86400 * 1000);
-           // Adjust for timezone offset if needed, but usually UTC is safer for day precision
            return date; 
         }
         return null;
     }
-
-    // If string in dd/mm/yyyy format
     if (typeof value === 'string') {
         const match = value.match(/^(\d{1,2})\/(\d{1,2})\/(\d{4})$/);
         if (match) {
             const [_, d, m, y] = match;
             return new Date(y, m - 1, d);
         }
-        // Fallback checks
         const d = new Date(value);
         if (!isNaN(d)) return d;
     }
@@ -79,62 +65,8 @@ const formatDate = (date) => {
     return date.toLocaleDateString('es-ES', { day: '2-digit', month: '2-digit', year: 'numeric' });
 };
 
-// DATA LOADING
-export const loadData = async () => {
-  try {
-    const [aspyData, masData] = await Promise.all([
-      fetchAndParseASPY(),
-      fetchAndParseMAS()
-    ]);
-    
-    // Combine
-    let combined = [...aspyData, ...masData];
-    
-    // TEMPORARY: Frozen date for presentation demo (revert to new Date() after)
-    const today = new Date('2026-02-09T00:00:00');
-    today.setHours(0, 0, 0, 0);
-    
-    // TEMPORARY: Exclude specific courses for presentation demo
-    const EXCLUDED_IDS = ['ASPY-33493', 'MAS-207640', 'ASPY-32973', 'MAS-211325'];
-
-    combined = combined.filter(c => {
-        if (!c.startDateRaw) return false;
-        if (EXCLUDED_IDS.includes(c.id)) return false;
-        const cDate = new Date(c.startDateRaw);
-        cDate.setHours(0, 0, 0, 0);
-        return cDate >= today;
-    });
-
-    // TEMPORARY: Data overrides for presentation demo
-    combined = combined.map(c => {
-        if (c.id === 'MAS-208209') {
-            return { ...c, inscritos: 1, plazas: 3 };
-        }
-        return c;
-    });
-
-    // Detect Synergies (Before sort logic or irrelevant, but keeping data processing together)
-    // Note: Imported from separate module in App.jsx now, but kept here if used internally?
-    // Actually typically invoked in App.jsx. Removing specific call here to rely on App.jsx flow 
-    // or keep raw data clean. But previous code had it. Let's return raw data here.
-    
-    // Sort by Date (Ascending: Soonest first) - FINAL STEP
-    combined.sort((a, b) => {
-        const dateA = a.startDateRaw || new Date(2099, 11, 31);
-        const dateB = b.startDateRaw || new Date(2099, 11, 31);
-        return dateA - dateB;
-    });
-    
-    return combined;
-  } catch (error) {
-    console.error("Error loading data:", error);
-    return [];
-  }
-};
-
-// Normalization Map for Provinces
+// PROVINCE MAP
 const provinceMap = {
-    // ... (Keep existing map)
     "alacant": "Alicante",
     "alicante": "Alicante",
     "barcelona": "Barcelona",
@@ -159,7 +91,6 @@ const provinceMap = {
     "tarragona": "Tarragona",
     "lleida": "Lleida",
     "lerida": "Lleida",
-    // Add more defaults just in case
     "almeria": "Almería",
     "cadiz": "Cádiz",
     "huelva": "Huelva",
@@ -192,104 +123,63 @@ const provinceMap = {
     "tenerife": "Santa Cruz de Tenerife"
 };
 
-// Helper: Remove accents for normalization
 const removeAccents = (str) => {
     return str.normalize("NFD").replace(/[\u0300-\u036f]/g, "");
 };
 
 const normalizeLocation = (rawLoc) => {
     if (!rawLoc) return "Desconocida";
-    
-    // Cleanup: remove extra spaces, lowercase for matching
     let clean = rawLoc.trim().toLowerCase();
-    
-    // Normalize accents (e.g., "AlmerÍA" -> "almeria")
     clean = removeAccents(clean);
-    
-    // Direct map lookup (simplified for brevity, assume map handles common cases)
-    // Check if clean string contains any key
     for (const [key, value] of Object.entries(provinceMap)) {
         if (clean.includes(key)) return value;
     }
-
-    // Default: Capitalize first letter
     return clean.charAt(0).toUpperCase() + clean.slice(1);
 };
 
-// Common parser with source switching
+// PARSER
 const parseRow = (row, source) => {
-    let rawTitle, fechaInicioRaw, fechaFinRaw, modalidad, duracion, ubicacionRaw, plazasTotales, plazasDisponibles, id, code;
-
-    /*
-     * NEW ASPY FILE COLUMNS:
-     * 0: ID
-     * 1: Inicio
-     * 2: Fin
-     * 3: Estado
-     * 4: Curso (Title)
-     * 5: Modalidad
-     * 6: Duración
-     * 7: Días restantes
-     * 8: % Ocupación
-     * 9: # Empresas
-     * 10: # Inscripciones
-     * 11: Aforo total
-     * 12: Plazas disponibles
-     * 13: Delegación
-     * 14: Localización
-     * ...
-     * 22: Provincia
-     */
+    let rawTitle, fechaInicioRaw, fechaFinRaw, modalidad, duracion, ubicacionRaw, plazasTotales, plazasDisponibles, id, code, inscritosRaw;
 
     if (source === 'ASPY') {
         id = `ASPY-${row[0]}`;
-        code = `ASPY-${row[0]}`; // Use ID as code
+        code = `ASPY-${row[0]}`;
         fechaInicioRaw = row[1];
         fechaFinRaw = row[2];
-        // Estado = row[3]
         rawTitle = row[4];
         modalidad = row[5];
         duracion = row[6];
-        // Aforo = row[11], Disponible = row[12]
         plazasTotales = row[11];
         plazasDisponibles = row[12];
-        
-        // Location priority: Provincia (22) -> Delegación (13) -> Localización (14)
-        ubicacionRaw = row[22] || row[13] || row[14]; 
-
+        inscritosRaw = row[10];
+        ubicacionRaw = row[22] || row[13]; 
     } else {
-        // Legacy MAS mapping (matches mas_2026.xls)
-        id = `MAS-${row[0] || Math.random()}`;
+        id = `MAS-${row[0]}`;
         code = `MAS-${row[0]}`;
-        rawTitle = row[1];
-        fechaInicioRaw = row[2];
-        fechaFinRaw = row[3];
-        modalidad = row[4];
-        duracion = row[5];
-        ubicacionRaw = row[6];
-        plazasTotales = row[7];
-        // In MAS file, row[9] was available? Let's keep logic
-        plazasDisponibles = row[9];
+        rawTitle = row[1] || row[2];
+        fechaInicioRaw = row[3];
+        fechaFinRaw = row[4];
+        modalidad = row[5];
+        duracion = row[6];
+        ubicacionRaw = row[16] || row[17];
+        plazasTotales = row[18];
+        plazasDisponibles = row[19];
+        inscritosRaw = row[29];
     }
     
     if (!rawTitle) return null;
 
-    // Date Parsing
     const startDateObj = getJsDate(fechaInicioRaw);
     const endDateObj = getJsDate(fechaFinRaw);
-    
     const fechaInicioStr = formatDate(startDateObj) || fechaInicioRaw;
     const fechaFinStr = formatDate(endDateObj) || fechaFinRaw;
-
-    // Location Normalization
     const ubicacion = normalizeLocation(ubicacionRaw);
-
-    // Title & Topic Normalization
     let title = cleanTitle(rawTitle);
     let topic = normalizeTopic(title);
-
-    // Force numeric duration
     const finalDuration = parseInt(duracion, 10) || 0;
+    const total = parseInt(plazasTotales, 10) || 0;
+    const available = parseInt(plazasDisponibles, 10) || 0;
+    const enrolled = inscritosRaw !== undefined ? (parseInt(inscritosRaw, 10) || 0) : Math.max(0, total - available);
 
     return {
         id: id,
@@ -305,23 +195,21 @@ const parseRow = (row, source) => {
         endDatefmt: fechaFinStr,
         startDateRaw: startDateObj,
         ubicacion: ubicacion,
-        plazas: plazasDisponibles !== undefined ? plazasDisponibles : 0,
-        totalPlazas: plazasTotales || 0,
-        inscritos: (plazasTotales || 0) - (plazasDisponibles !== undefined ? plazasDisponibles : 0),
-        estado: (plazasDisponibles > 0) ? "CONFIRMADO" : "CERRADO",
+        plazas: available,
+        totalPlazas: total,
+        inscritos: enrolled,
+        estado: (available > 0) ? "CONFIRMADO" : "CERRADO",
         duracion_presencial: finalDuration
     };
 };
 
-
+// FETCHERS
 const fetchAndParseASPY = async () => {
   const file = await fetch(ASPY_FILE);
   const buffer = await file.arrayBuffer();
   const wb = read(buffer, { type: 'array' });
   const ws = wb.Sheets[wb.SheetNames[0]];
-  // Enable cellDates to allow library to parse dates
   const json = utils.sheet_to_json(ws, { header: 1, cellDates: true }).slice(1);
-
   return json.map(row => parseRow(row, 'ASPY')).filter(Boolean);
 };
 
@@ -331,7 +219,6 @@ const fetchAndParseMAS = async () => {
     const wb = read(buffer, { type: 'array' });
     const ws = wb.Sheets[wb.SheetNames[0]];
     const json = utils.sheet_to_json(ws, { header: 1, cellDates: true }).slice(1);
-
     return json.map(row => parseRow(row, 'MAS')).filter(Boolean);
 };
 
@@ -339,13 +226,10 @@ export const loadSynergyDictionary = async () => {
     try {
         const file = await fetch(DICT_FILE);
         if (!file.ok) throw new Error("Dictionary file not found");
-        
         const buffer = await file.arrayBuffer();
         const wb = read(buffer, { type: 'array' });
         const ws = wb.Sheets[wb.SheetNames[0]];
-        // Assume format: [ASPY Title, MAS Title, Keywords]
         const json = utils.sheet_to_json(ws, { header: 1 }).slice(1);
-        
         return json.map(row => ({
             aspyTitle: cleanTitle(row[0]),
             masTitle: cleanTitle(row[1])
@@ -356,13 +240,115 @@ export const loadSynergyDictionary = async () => {
     }
 };
 
+export const loadData = async () => {
+  try {
+    const [aspyData, masData] = await Promise.all([
+      fetchAndParseASPY(),
+      fetchAndParseMAS()
+    ]);
+    
+    let combined = [...aspyData, ...masData];
+    
+    // Filter out past courses (Keep today onwards)
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
 
-// KPI helper (can be exported or computed in component)
+    combined = combined.filter(c => {
+        if (!c.startDateRaw) return false;
+        return c.startDateRaw >= today;
+    });
+    
+    combined.sort((a, b) => {
+        const dateA = a.startDateRaw || new Date(2099, 11, 31);
+        const dateB = b.startDateRaw || new Date(2099, 11, 31);
+        return dateA - dateB;
+    });
+    
+    return combined;
+  } catch (error) {
+    console.error("Error loading data:", error);
+    return [];
+  }
+};
+
 export const calculateKPIs = (data) => ({
   confirmed: data.filter(d => d.estado === 'CONFIRMADO').length,
   closed: data.filter(d => d.estado === 'CERRADO').length,
   finalized: data.filter(d => d.estado === 'FINALIZADO').length
 });
 
-// Mock export for backward compatibility if needed, but we use loadData() now
-export const getProcessedData = () => []; 
+const validateHeaders = (headers, type) => {
+    if (!headers || headers.length < 5) return false;
+    if (type === 'ASPY') {
+        return true; 
+    } else {
+        return true; 
+    }
+};
+
+export const parseUploadedFile = async (file, type) => {
+    return new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onload = (e) => {
+            try {
+                const data = new Uint8Array(e.target.result);
+                const workbook = read(data, { type: 'array' });
+                const firstSheet = workbook.Sheets[workbook.SheetNames[0]];
+                const jsonData = utils.sheet_to_json(firstSheet, { header: 1, cellDates: true });
+
+                if (!jsonData || jsonData.length < 2) {
+                    reject(new Error("El archivo está vacío o no tiene formato válido."));
+                    return;
+                }
+
+                const headers = jsonData[0];
+                if (!validateHeaders(headers, type)) {
+                    reject(new Error(`El formato de columnas no coincide con la plantilla de ${type}.`));
+                    return;
+                }
+
+                const rows = jsonData.slice(1);
+                const parsed = rows.map(row => parseRow(row, type)).filter(Boolean);
+                
+                if (parsed.length === 0) {
+                     reject(new Error("No se encontraron cursos válidos en el archivo."));
+                     return;
+                }
+
+                resolve(parsed);
+            } catch (err) {
+                reject(err);
+            }
+        };
+        reader.onerror = (error) => reject(error);
+        reader.readAsArrayBuffer(file);
+    });
+};
+
+export const mergeData = (currentData, newData, type) => {
+    // 1. Remove all existing records for this type
+    const others = currentData.filter(d => d.source !== type);
+    
+    // 2. Add new records
+    let combined = [...others, ...newData];
+
+    // Filter out past courses (Keep today onwards)
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+
+    combined = combined.filter(c => {
+        if (!c.startDateRaw) return false;
+        return c.startDateRaw >= today;
+    });
+
+    // 3. Sort by date
+    combined.sort((a, b) => {
+        const dateA = a.startDateRaw || new Date(2099, 11, 31);
+        const dateB = b.startDateRaw || new Date(2099, 11, 31);
+        return dateA - dateB;
+    });
+    
+    return combined;
+};
+
+export const getProcessedData = () => [];

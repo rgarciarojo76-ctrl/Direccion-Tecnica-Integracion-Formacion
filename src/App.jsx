@@ -4,14 +4,29 @@ import { Download, Layout } from 'lucide-react';
 import FilterBar from './components/FilterBar';
 import CoursesTable from './components/CoursesTable';
 import KPIDashboard from './components/KPIDashboard';
-import { loadData, loadSynergyDictionary } from './utils/dataProcessor';
+import NotificationToast from './components/NotificationToast';
+import UploadModal from './components/UploadModal';
+import { loadData, loadSynergyDictionary, parseUploadedFile, mergeData } from './utils/dataProcessor';
 import { processCourseListWithGroups } from './utils/synergyEngine';
 import { exportToExcel, exportToPDF } from './utils/exportUtils';
 import './App.css';
 
 function App() {
   const [data, setData] = useState([]);
+  const [dictionary, setDictionary] = useState([]); // Store dictionary for re-processing
   const [loading, setLoading] = useState(true);
+
+  // Upload & Notification State - HIDDEN (2026-02-19)
+  /*
+  const [isUploadModalOpen, setIsUploadModalOpen] = useState(false);
+  const [notification, setNotification] = useState(null);
+  const [uploadHistory, setUploadHistory] = useState(() => {
+      try {
+          const saved = localStorage.getItem('upload_history');
+          return saved ? JSON.parse(saved) : [];
+      } catch { return []; }
+  });
+  */
 
   // Filter State
   const [filters, setFilters] = useState({
@@ -74,11 +89,12 @@ function App() {
   useEffect(() => {
     const fetchData = async () => {
       setLoading(true);
-      const [rawData, dictionary] = await Promise.all([
+      const [rawData, dict] = await Promise.all([
         loadData(),
         loadSynergyDictionary()
       ]);
-      const processed = processCourseListWithGroups(rawData, dictionary);
+      setDictionary(dict);
+      const processed = processCourseListWithGroups(rawData, dict);
       setData(processed);
       setLoading(false);
     };
@@ -104,89 +120,163 @@ function App() {
     }
   };
 
-  return (
-    <div className="app-container">
-      {/* TOP BAR */}
-      <header className="main-header">
-        <div className="header-content max-w-7xl mx-auto px-6">
-          <div className="header-left flex items-center">
-            {/* IA LAB Horizontal Logo (includes brand text) */}
-            <div className="logo-container flex items-center">
-               <img 
-                 src="/logos/ia_lab_logo_horizontal.png" 
-                 alt="Dirección Técnica IA LAB" 
-                 className="object-contain"
-                 style={{ height: '42px', width: 'auto' }}
-               />
-            </div>
-            
-            {/* App descriptor - separated by subtle divider */}
-            <div className="header-separator" style={{ marginLeft: '1.25rem', marginRight: '1.25rem' }}></div>
-            <div className="flex flex-col justify-center">
-              <span style={{ color: '#009ee3', fontWeight: 700, fontSize: '0.95rem', lineHeight: 1.3 }}>
-                DIRECCIÓN TÉCNICA IA LAB
-              </span>
-              <span style={{ color: '#009ee3', fontWeight: 500, fontSize: '0.8rem', lineHeight: 1.3 }}>
-                Aplicación: Prueba concepto programación de cursos conjuntos
-              </span>
-            </div>
-          </div>
+  // Upload Logic
+  /* UPLOAD LOGIC HIDDEN (2026-02-19)
+  const handleUpload = async (file, type) => {
+      try {
+          const newRows = await parseUploadedFile(file, type);
+          
+          // Flatten current data to get raw list for merging
+          const currentRaw = data.flatMap(item => item.type === 'group' ? item.courses : item);
+          
+          // Merge
+          const updatedRaw = mergeData(currentRaw, newRows, type);
+          
+          // Re-process
+          const processed = processCourseListWithGroups(updatedRaw, dictionary);
+          setData(processed);
 
-          <div className="header-right flex items-center gap-3">
-            <div className="status-pill">
-              Estado: Piloto Interno
-            </div>
-            <div className="warning-pill">
-              <span className="font-bold">AVISO:</span> Datos en validación.
-            </div>
-          </div>
-        </div>
+          // Success Notification
+          setNotification({ type: 'success', message: `Programación ${type} cargada y procesada correctamente.` });
+          setIsUploadModalOpen(false);
+
+          // Update History
+          const newEntry = {
+              type,
+              fileName: file.name,
+              timestamp: new Date().toISOString(),
+              status: 'success'
+          };
+          const newHistory = [newEntry, ...uploadHistory];
+          setUploadHistory(newHistory);
+          localStorage.setItem('upload_history', JSON.stringify(newHistory));
+
+      } catch (err) {
+          console.error("Upload Error:", err);
+          setNotification({ type: 'error', message: err.message || "Error al procesar el archivo." });
+          
+          // Log failure
+          const newEntry = {
+              type,
+              fileName: file.name,
+              timestamp: new Date().toISOString(),
+              status: 'error'
+          };
+          const newHistory = [newEntry, ...uploadHistory];
+          setUploadHistory(newHistory);
+          localStorage.setItem('upload_history', JSON.stringify(newHistory));
+      }
+  };
+  */
+
+  return (
+    <div className="min-h-screen bg-gray-50 flex flex-col font-sans">
+      {/* HEADER */}
+      <header className="main-header sticky top-0 z-30">
+         <div className="header-content max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
+           {/* LOGO area */}
+           <div className="flex items-center gap-6">
+             <div className="flex items-center gap-3">
+               <img src="/logos/ia_lab_logo_horizontal.png" alt="IA Lab Logo" className="header-logo" />
+               <div className="header-separator"></div>
+               <div className="flex flex-col">
+                 <span className="header-brand-title">DIRECCIÓN TÉCNICA IA LAB</span>
+                 <span className="header-brand-subtitle">Aplicación: Prueba concepto programación de cursos conjuntos</span>
+               </div>
+             </div>
+           </div>
+
+           {/* Status Pills */}
+           <div className="hidden md:flex items-center gap-3">
+              <div className="status-pill">
+                <div className="w-2 h-2 rounded-full bg-green-500 animate-pulse"></div>
+                <span className="text-xs font-medium text-gray-700">Sistema Operativo</span>
+              </div>
+              <div className="status-pill">
+                 <span className="text-xs font-medium text-gray-500">v0.9.2 (Beta)</span>
+              </div>
+              <div className="warning-pill ml-2">
+                 <span className="text-xs font-bold text-amber-700 flex items-center gap-1">
+                   ⚠️ ENTORNO DE PRUEBAS
+                 </span>
+              </div>
+           </div>
+         </div>
       </header>
 
-      {/* HERO TITLE BAR */}
+      {/* HERO SECTION */}
       <div className="hero-section">
-        <div className="max-w-7xl mx-auto px-6 hero-inner">
-          <div>
-            <h2 className="hero-title">
-              Programación Oferta Formativa Conjunta ASPY - MAS 2026
-            </h2>
-            <p className="hero-subtitle">
-              Visualización unificada de cursos y detección de oportunidades de sinergia
-            </p>
-          </div>
-          <button onClick={handleExport} className="btn-export">
-            <Download size={16} />
-            <span>Exportar Informe</span>
-          </button>
+        <div className="hero-inner max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+           <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
+             <div>
+               <h1 className="hero-title">
+                 Programación de Formación 2026
+               </h1>
+               <p className="hero-subtitle">
+                 Visualización y detección de sinergias entre compañías
+               </p>
+             </div>
+             
+             <button onClick={handleExport} className="btn-export">
+               <Download size={18} />
+               Exportar Informe
+             </button>
+           </div>
         </div>
       </div>
 
-      <main className="max-w-7xl mx-auto px-6 py-8">
-        {/* KPI DASHBOARD */}
-        {!loading && <KPIDashboard data={filteredData} />}
+      <main className="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        
+        {/* Filter Bar */}
+        <FilterBar 
+          filters={filters} 
+          onFilterChange={handleFilterChange} 
+          uniqueTitles={uniqueTitles}
+          uniqueLocations={uniqueLocations}
+          // onOpenUpload={() => setIsUploadModalOpen(true)} // HIDDEN (2026-02-19)
+        />
 
-        {/* FILTERS */}
-        <div className="card p-4 mb-4 bg-white rounded-xl shadow-sm border border-slate-100">
-           <FilterBar 
-             filters={filters} 
-             onFilterChange={handleFilterChange} 
-             uniqueTitles={uniqueTitles}
-             uniqueLocations={uniqueLocations}
-           />
-        </div>
-
-        {/* DATA TABLE */}
-        <div className="mt-6">
-          {loading ? (
-             <div className="p-12 text-center text-slate-500">
-                <span className="animate-pulse">Cargando datos...</span>
+        {/* Content */}
+        {loading ? (
+          <div className="flex justify-center items-center h-64">
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
+          </div>
+        ) : (
+          <div className="animate-fade-in">
+             <div className="mb-4 text-sm text-gray-500 font-medium">
+               Mostrando {filteredData.length} resultados 
+               {filters.showSynergiesOnly && " (Filtrado por sinergías)"}
              </div>
-          ) : (
-             <CoursesTable data={filteredData} />
-          )}
-        </div>
-
+             
+             <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
+               <CoursesTable data={filteredData} />
+             </div>
+          </div>
+        )}
       </main>
+
+      {/* Footer */}
+      <footer className="bg-white border-t mt-auto py-8">
+        <div className="max-w-7xl mx-auto px-4 text-center text-sm text-gray-400">
+          © 2026 IA Lab - Dirección Técnica. Todos los derechos reservados.
+        </div>
+      </footer>
+
+      {/* Modals & Toasts - UPLOAD FEATURE HIDDEN (2026-02-19)
+      <UploadModal 
+        isOpen={isUploadModalOpen} 
+        onClose={() => setIsUploadModalOpen(false)} 
+        onUpload={handleUpload}
+        history={uploadHistory}
+      />
+      */}
+      {/* HIDDEN (2026-02-19)
+      <NotificationToast 
+        notification={notification} 
+        onClose={() => setNotification(null)} 
+      />
+      */}
+
     </div>
   );
 }
