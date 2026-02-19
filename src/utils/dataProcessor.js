@@ -2,8 +2,8 @@ import { read, utils } from 'xlsx';
 
 // FILE PATHS (In public folder)
 // FILE PATHS (In public folder)
-const ASPY_FILE = '/data/aspy_blue_2026.xlsx';
-const MAS_FILE = '/data/mas_2026.xls';
+const ASPY_FILE = '/data/aspy_formacion.xlsx';
+const MAS_FILE = '/data/mas_formacion.xls';
 const DICT_FILE = '/data/diccionario_sinergias_final.xlsx';
 
 // KEY MAPPINGS
@@ -90,27 +90,15 @@ export const loadData = async () => {
     // Combine
     let combined = [...aspyData, ...masData];
     
-    // TEMPORARY: Frozen date for presentation demo (revert to new Date() after)
-    const today = new Date('2026-02-09T00:00:00');
+    // Filter: only courses starting today or later
+    const today = new Date();
     today.setHours(0, 0, 0, 0);
-    
-    // TEMPORARY: Exclude specific courses for presentation demo
-    const EXCLUDED_IDS = ['ASPY-33493', 'MAS-207640', 'ASPY-32973', 'MAS-211325'];
 
     combined = combined.filter(c => {
         if (!c.startDateRaw) return false;
-        if (EXCLUDED_IDS.includes(c.id)) return false;
         const cDate = new Date(c.startDateRaw);
         cDate.setHours(0, 0, 0, 0);
         return cDate >= today;
-    });
-
-    // TEMPORARY: Data overrides for presentation demo
-    combined = combined.map(c => {
-        if (c.id === 'MAS-208209') {
-            return { ...c, inscritos: 1, plazas: 3 };
-        }
-        return c;
     });
 
     // Detect Synergies (Before sort logic or irrelevant, but keeping data processing together)
