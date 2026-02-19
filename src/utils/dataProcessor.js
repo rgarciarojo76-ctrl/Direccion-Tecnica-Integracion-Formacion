@@ -206,7 +206,7 @@ const normalizeLocation = (rawLoc) => {
 
 // Common parser with source switching
 const parseRow = (row, source) => {
-    let rawTitle, fechaInicioRaw, fechaFinRaw, modalidad, duracion, ubicacionRaw, plazasTotales, plazasDisponibles, id, code;
+    let rawTitle, fechaInicioRaw, fechaFinRaw, modalidad, duracion, ubicacionRaw, plazasTotales, plazasDisponibles, id, code, inscritosRaw;
 
     /*
      * NEW ASPY FILE COLUMNS:
@@ -231,53 +231,43 @@ const parseRow = (row, source) => {
 
     if (source === 'ASPY') {
         id = `ASPY-${row[0]}`;
-        code = `ASPY-${row[0]}`; // Use ID as code
+        code = `ASPY-${row[0]}`;
         fechaInicioRaw = row[1];
         fechaFinRaw = row[2];
-        // Estado = row[3]
         rawTitle = row[4];
         modalidad = row[5];
         duracion = row[6];
-        // Aforo = row[11], Disponible = row[12]
         plazasTotales = row[11];
         plazasDisponibles = row[12];
-        
-        // Location priority: Provincia (22) -> Delegación (13) -> Localización (14)
-        ubicacionRaw = row[22] || row[13] || row[14]; 
-
+        inscritosRaw = row[10];
+        ubicacionRaw = row[22] || row[13]; 
     } else {
-        // Legacy MAS mapping (matches mas_2026.xls)
-        id = `MAS-${row[0] || Math.random()}`;
+        id = `MAS-${row[0]}`;
         code = `MAS-${row[0]}`;
-        rawTitle = row[1];
-        fechaInicioRaw = row[2];
-        fechaFinRaw = row[3];
-        modalidad = row[4];
-        duracion = row[5];
-        ubicacionRaw = row[6];
-        plazasTotales = row[7];
-        // In MAS file, row[9] was available? Let's keep logic
-        plazasDisponibles = row[9];
+        rawTitle = row[1] || row[2];
+        fechaInicioRaw = row[3];
+        fechaFinRaw = row[4];
+        modalidad = row[5];
+        duracion = row[6];
+        ubicacionRaw = row[16] || row[17];
+        plazasTotales = row[18];
+        plazasDisponibles = row[19];
+        inscritosRaw = row[29];
     }
     
     if (!rawTitle) return null;
 
-    // Date Parsing
     const startDateObj = getJsDate(fechaInicioRaw);
     const endDateObj = getJsDate(fechaFinRaw);
-    
     const fechaInicioStr = formatDate(startDateObj) || fechaInicioRaw;
     const fechaFinStr = formatDate(endDateObj) || fechaFinRaw;
-
-    // Location Normalization
     const ubicacion = normalizeLocation(ubicacionRaw);
-
-    // Title & Topic Normalization
     let title = cleanTitle(rawTitle);
     let topic = normalizeTopic(title);
-
-    // Force numeric duration
     const finalDuration = parseInt(duracion, 10) || 0;
+    const total = parseInt(plazasTotales, 10) || 0;
+    const available = parseInt(plazasDisponibles, 10) || 0;
+    const enrolled = inscritosRaw !== undefined ? (parseInt(inscritosRaw, 10) || 0) : Math.max(0, total - available);
 
     return {
         id: id,
@@ -293,10 +283,10 @@ const parseRow = (row, source) => {
         endDatefmt: fechaFinStr,
         startDateRaw: startDateObj,
         ubicacion: ubicacion,
-        plazas: plazasDisponibles !== undefined ? plazasDisponibles : 0,
-        totalPlazas: plazasTotales || 0,
-        inscritos: (plazasTotales || 0) - (plazasDisponibles !== undefined ? plazasDisponibles : 0),
-        estado: (plazasDisponibles > 0) ? "CONFIRMADO" : "CERRADO",
+        plazas: available,
+        totalPlazas: total,
+        inscritos: enrolled,
+        estado: (available > 0) ? "CONFIRMADO" : "CERRADO",
         duracion_presencial: finalDuration
     };
 };
