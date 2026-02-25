@@ -152,7 +152,10 @@ export const findOptimizations = (allCourses, dictionary = []) => {
             const daysDiff = Math.abs((courseA.startDateRaw - courseB.startDateRaw) / (1000 * 60 * 60 * 24));
             if (daysDiff > 15) continue;
 
-            // 3. Match Logic: Dictionary OR Fuzzy
+            // 3. Same duration (must be equal hours)
+            if (courseA.duracion_presencial !== courseB.duracion_presencial) continue;
+
+            // 4. Match Logic: Dictionary OR Fuzzy
             let isDictMatch = false;
             let isFuzzyMatch = false;
 
