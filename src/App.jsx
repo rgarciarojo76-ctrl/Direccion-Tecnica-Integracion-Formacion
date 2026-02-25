@@ -7,9 +7,20 @@ import KPIDashboard from './components/KPIDashboard';
 import { loadData, loadSynergyDictionary } from './utils/dataProcessor';
 import { processCourseListWithGroups } from './utils/synergyEngine';
 import { exportToExcel, exportToPDF } from './utils/exportUtils';
+import pkg from '../package.json';
 import './App.css';
 
 function App() {
+  const formatDateSpanish = (isoString) => {
+    if (!isoString) return '';
+    const date = new Date(isoString);
+    const months = [
+      "enero", "febrero", "marzo", "abril", "mayo", "junio",
+      "julio", "agosto", "septiembre", "octubre", "noviembre", "diciembre"
+    ];
+    return `${date.getDate()} de ${months[date.getMonth()]} de ${date.getFullYear()}`;
+  };
+
   const [data, setData] = useState([]);
   const [loading, setLoading] = useState(true);
 
@@ -152,6 +163,9 @@ function App() {
             </h2>
             <p className="hero-subtitle">
               Visualización unificada de cursos y detección de oportunidades de sinergia
+            </p>
+            <p className="hero-subtitle" style={{ marginTop: '0.2rem' }}>
+              Última actualización de datos: {formatDateSpanish(pkg.buildTimestamp)}
             </p>
           </div>
           <button onClick={handleExport} className="btn-export">
