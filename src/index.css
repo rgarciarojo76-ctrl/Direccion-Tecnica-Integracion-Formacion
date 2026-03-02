@@ -1317,3 +1317,16 @@ table tbody tr td {
 .btn-undo-unify:hover {
   color: #dc2626;
 }
+
+/* ========================================
+   HIDE EXTERNAL INJECTED DEV TOOLS (VERCEL TOOLBAR)
+   ======================================== */
+vercel-toolbar,
+#vercel-toolbar,
+.vercel-toolbar,
+[data-vercel-toolbar] {
+  display: none !important;
+  opacity: 0 !important;
+  visibility: hidden !important;
+  pointer-events: none !important;
+}
