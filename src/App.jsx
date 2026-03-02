@@ -148,20 +148,20 @@ function App() {
     }
   };
 
+  // Persist unifications to localStorage (Background)
+  useEffect(() => {
+    localStorage.setItem('unifications', JSON.stringify(unifications));
+  }, [unifications]);
+
   // Unification handlers
   const handleUnify = (groupId, entidad) => {
-    setUnifications(prev => {
-      const next = { ...prev, [groupId]: entidad };
-      localStorage.setItem('unifications', JSON.stringify(next));
-      return next;
-    });
+    setUnifications(prev => ({ ...prev, [groupId]: entidad }));
   };
 
   const handleUndoUnify = (groupId) => {
     setUnifications(prev => {
       const next = { ...prev };
       delete next[groupId];
-      localStorage.setItem('unifications', JSON.stringify(next));
       return next;
     });
   };
