@@ -1,7 +1,7 @@
 import React from 'react';
-import { Users, Search, AlertTriangle, MapPin } from 'lucide-react';
+import { Users, Search, AlertTriangle, MapPin, CheckCircle2 } from 'lucide-react';
 
-const CoursesTable = ({ data }) => {
+const CoursesTable = ({ data, unifications = {}, onUnify, onUndoUnify }) => {
 
   const getLogo = (source) => {
     if (source === 'ASPY') return '/logos/aspy_logo.png';
@@ -99,6 +99,8 @@ const CoursesTable = ({ data }) => {
    */
   const SynergyGroup = ({ item }) => {
     const scenario = item.scenarioType || 'optimal';
+    const unifiedAs = unifications[item.id]; // 'MAS' | 'ASPY' | undefined
+    const isUnifiable = scenario === 'optimal' || scenario === 'permuted';
 
     // Card CSS class by scenario
     const cardClassMap = {
@@ -196,6 +198,14 @@ const CoursesTable = ({ data }) => {
               </div>
 
               <div className="p-6 pt-10">
+                {/* Unified badge */}
+                {unifiedAs && (
+                  <div className="unify-badge">
+                    <CheckCircle2 size={14} />
+                    CURSOS UNIFICADOS — Imparte {unifiedAs}
+                  </div>
+                )}
+
                 {renderMessage()}
 
                 <table className="w-full border-separate border-spacing-y-2">
@@ -203,6 +213,26 @@ const CoursesTable = ({ data }) => {
                     {item.courses.map(course => <Row key={course.id} row={course} />)}
                   </tbody>
                 </table>
+
+                {/* Unification action buttons */}
+                {isUnifiable && (
+                  <div className="unify-actions">
+                    {!unifiedAs ? (
+                      <>
+                        <button className="btn-unify btn-unify-aspy" onClick={() => onUnify && onUnify(item.id, 'ASPY')}>
+                          Imparte ASPY
+                        </button>
+                        <button className="btn-unify btn-unify-mas" onClick={() => onUnify && onUnify(item.id, 'MAS')}>
+                          Imparte MAS
+                        </button>
+                      </>
+                    ) : (
+                      <button className="btn-undo-unify" onClick={() => onUndoUnify && onUndoUnify(item.id)}>
+                        Deshacer unificación
+                      </button>
+                    )}
+                  </div>
+                )}
               </div>
             </div>
           </td>
@@ -232,7 +262,7 @@ const CoursesTable = ({ data }) => {
         <tbody className="text-sm">
           {data.map((item) => {
             if (item.type === 'group') {
-              return <SynergyGroup key={item.id} item={item} />;
+              return <SynergyGroup key={item.id} item={item} unifiedAs={unifications[item.id]} />;
             }
             return <Row key={item.id} row={item} />;
           })}

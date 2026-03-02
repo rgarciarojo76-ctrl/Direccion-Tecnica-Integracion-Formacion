@@ -1098,3 +1098,227 @@ table tbody tr td {
     grid-template-columns: 1fr;
   }
 }
+
+/* ========================================
+   ECONOMIC DASHBOARD
+   ======================================== */
+
+.economic-dashboard {
+  background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+  border: 1px solid #e2e8f0;
+  border-top: 3px solid var(--primary-color);
+  border-radius: var(--border-radius);
+  padding: 1.25rem 1.5rem;
+  margin-bottom: 1rem;
+  box-shadow: var(--shadow-sm);
+}
+
+.economic-dashboard-empty {
+  border-top-color: #cbd5e1;
+}
+
+.economic-empty-content {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  color: #94a3b8;
+  font-size: 0.85rem;
+}
+
+.economic-header {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin-bottom: 1rem;
+}
+
+.economic-header-icon {
+  background: rgba(0, 158, 227, 0.1);
+  color: var(--primary-color);
+  padding: 0.4rem;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+}
+
+.economic-header-title {
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: var(--secondary-color);
+  letter-spacing: 0.02em;
+  flex: 1;
+}
+
+.economic-total-badge {
+  background: linear-gradient(135deg, #009ee3, #0077b6);
+  color: white;
+  font-size: 0.9rem;
+  font-weight: 700;
+  padding: 0.4rem 1rem;
+  border-radius: 9999px;
+  box-shadow: 0 2px 6px rgba(0, 158, 227, 0.3);
+}
+
+.economic-columns {
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  gap: 1rem;
+  align-items: stretch;
+}
+
+.economic-divider {
+  width: 1px;
+  background: #e2e8f0;
+  min-height: 60px;
+}
+
+.economic-column {
+  padding: 0.5rem 0;
+}
+
+.economic-column-title {
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  margin-bottom: 0.75rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.economic-column-aspy .economic-column-title {
+  color: #009ee3;
+}
+
+.economic-column-mas .economic-column-title {
+  color: #7c3aed;
+}
+
+.economic-arrow {
+  font-size: 1rem;
+  opacity: 0.6;
+}
+
+.economic-metrics-row {
+  display: flex;
+  gap: 1.5rem;
+}
+
+.economic-metric {
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+}
+
+.economic-metric-value {
+  font-size: 1.2rem;
+  font-weight: 700;
+  color: var(--secondary-color);
+}
+
+.economic-metric-highlight .economic-metric-value {
+  color: var(--primary-color);
+}
+
+.economic-metric-label {
+  font-size: 0.65rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: #94a3b8;
+}
+
+@media (max-width: 768px) {
+  .economic-columns {
+    grid-template-columns: 1fr;
+  }
+  .economic-divider {
+    width: 100%;
+    height: 1px;
+    min-height: 0;
+  }
+}
+
+/* ========================================
+   UNIFICATION BUTTONS & BADGES
+   ======================================== */
+
+.unify-actions {
+  display: flex;
+  gap: 0.75rem;
+  margin-top: 1rem;
+  padding-top: 0.75rem;
+  border-top: 1px dashed #d1d5db;
+  justify-content: flex-end;
+}
+
+.btn-unify {
+  padding: 0.5rem 1.25rem;
+  font-size: 0.8rem;
+  font-weight: 600;
+  border-radius: 8px;
+  border: 2px solid transparent;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+.btn-unify-aspy {
+  background: #e0f7ff;
+  color: #009ee3;
+  border-color: #009ee3;
+}
+
+.btn-unify-aspy:hover {
+  background: #009ee3;
+  color: white;
+  box-shadow: 0 4px 12px rgba(0, 158, 227, 0.3);
+  transform: translateY(-1px);
+}
+
+.btn-unify-mas {
+  background: #ede9fe;
+  color: #7c3aed;
+  border-color: #7c3aed;
+}
+
+.btn-unify-mas:hover {
+  background: #7c3aed;
+  color: white;
+  box-shadow: 0 4px 12px rgba(124, 58, 237, 0.3);
+  transform: translateY(-1px);
+}
+
+.btn-undo-unify {
+  color: #ef4444;
+  font-size: 0.8rem;
+  font-weight: 500;
+  text-decoration: underline;
+  cursor: pointer;
+  background: none;
+  border: none;
+  padding: 0.5rem;
+  transition: color 0.2s;
+}
+
+.btn-undo-unify:hover {
+  color: #dc2626;
+}
+
+.unify-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  background: linear-gradient(135deg, #009ee3, #0077b6);
+  color: white;
+  font-size: 0.7rem;
+  font-weight: 700;
+  padding: 0.35rem 0.85rem;
+  border-radius: 6px;
+  margin-bottom: 0.75rem;
+  letter-spacing: 0.03em;
+  box-shadow: 0 2px 6px rgba(0, 158, 227, 0.25);
+}

@@ -4,6 +4,8 @@ import { Download, Layout } from 'lucide-react';
 import FilterBar from './components/FilterBar';
 import CoursesTable from './components/CoursesTable';
 import KPIDashboard from './components/KPIDashboard';
+import EconomicDashboard from './components/EconomicDashboard';
+import { useUnificationMetrics } from './hooks/useUnificationMetrics';
 import { loadData, loadSynergyDictionary } from './utils/dataProcessor';
 import { processCourseListWithGroups } from './utils/synergyEngine';
 import { exportToExcel, exportToPDF } from './utils/exportUtils';
@@ -23,6 +25,14 @@ function App() {
 
   const [data, setData] = useState([]);
   const [loading, setLoading] = useState(true);
+
+  // Unification State (persisted in localStorage)
+  const [unifications, setUnifications] = useState(() => {
+    try {
+      const saved = localStorage.getItem('unifications');
+      return saved ? JSON.parse(saved) : {};
+    } catch { return {}; }
+  });
 
   // Filter State
   const [filters, setFilters] = useState({
@@ -115,6 +125,31 @@ function App() {
     }
   };
 
+  // Unification handlers
+  const handleUnify = (groupId, entidad) => {
+    setUnifications(prev => {
+      const next = { ...prev, [groupId]: entidad };
+      localStorage.setItem('unifications', JSON.stringify(next));
+      return next;
+    });
+  };
+
+  const handleUndoUnify = (groupId) => {
+    setUnifications(prev => {
+      const next = { ...prev };
+      delete next[groupId];
+      localStorage.setItem('unifications', JSON.stringify(next));
+      return next;
+    });
+  };
+
+  // Economic metrics
+  const synergyGroups = useMemo(() => 
+    filteredData.filter(item => item.type === 'group'), 
+    [filteredData]
+  );
+  const economicMetrics = useUnificationMetrics(synergyGroups, unifications);
+
   return (
     <div className="app-container">
       {/* TOP BAR */}
@@ -179,6 +214,9 @@ function App() {
         {/* KPI DASHBOARD */}
         {!loading && <KPIDashboard data={filteredData} />}
 
+        {/* ECONOMIC DASHBOARD */}
+        {!loading && <EconomicDashboard metrics={economicMetrics} />}
+
         {/* FILTERS */}
         <div className="card p-4 mb-4 bg-white rounded-xl shadow-sm border border-slate-100">
            <FilterBar 
@@ -196,7 +234,12 @@ function App() {
                 <span className="animate-pulse">Cargando datos...</span>
              </div>
           ) : (
-             <CoursesTable data={filteredData} />
+             <CoursesTable 
+               data={filteredData} 
+               unifications={unifications}
+               onUnify={handleUnify}
+               onUndoUnify={handleUndoUnify}
+             />
           )}
         </div>
 
