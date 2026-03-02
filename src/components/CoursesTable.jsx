@@ -193,18 +193,22 @@ const CoursesTable = ({ data, unifications = {}, onUnify, onUndoUnify }) => {
             <div className={cardClass}>
               {/* Header Gradient */}
               <div className={`synergy-card-header-gradient ${gradientExtra}`}></div>
-              <div className={badge.className}>
-                <span>{badge.text}</span>
-              </div>
-
-              <div className="p-6 pt-10">
-                {/* Unified badge */}
+              
+              {/* Badges Container */}
+              <div className="synergy-card-badges-container">
+                <div className={badge.className}>
+                  <span>{badge.text}</span>
+                </div>
+                {/* Unified badge (Moved up next to the main badge) */}
                 {unifiedAs && (
-                  <div className="unify-badge">
+                  <div className="unify-badge-inline">
                     <CheckCircle2 size={14} />
                     CURSOS UNIFICADOS — Imparte {unifiedAs}
                   </div>
                 )}
+              </div>
+
+              <div className="p-6 pt-10">
 
                 {renderMessage()}
 
