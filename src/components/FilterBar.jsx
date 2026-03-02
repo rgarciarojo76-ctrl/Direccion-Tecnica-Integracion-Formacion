@@ -38,35 +38,40 @@ const FilterBar = ({ filters, onFilterChange, uniqueTitles = [], uniqueLocations
             <Sparkles size={14} />
             Vista
           </label>
-          <div className="flex gap-3">
-            <label className={`toggle-wrapper-pro ${filters.showSynergiesOnly ? 'active' : ''}`}>
-              <input 
-                type="checkbox" 
-                checked={filters.showSynergiesOnly}
-                onChange={(e) => {
-                  onFilterChange('showSynergiesOnly', e.target.checked);
-                  if (e.target.checked) onFilterChange('showUnifiedOnly', false);
-                }}
-                className="toggle-input-pro"
-              />
-              <span className="toggle-slider-pro"></span>
-              <span className="toggle-text-pro">Solo sinergias</span>
-            </label>
+          <label className={`toggle-wrapper-pro ${filters.showSynergiesOnly ? 'active' : ''}`}>
+            <input 
+              type="checkbox" 
+              checked={filters.showSynergiesOnly}
+              onChange={(e) => {
+                onFilterChange('showSynergiesOnly', e.target.checked);
+                if (e.target.checked) onFilterChange('showUnifiedOnly', false);
+              }}
+              className="toggle-input-pro"
+            />
+            <span className="toggle-slider-pro"></span>
+            <span className="toggle-text-pro">Solo sinergias</span>
+          </label>
+        </div>
 
-            <label className={`toggle-wrapper-pro toggle-wrapper-blue ${filters.showUnifiedOnly ? 'active' : ''}`}>
-              <input 
-                type="checkbox" 
-                checked={filters.showUnifiedOnly}
-                onChange={(e) => {
-                  onFilterChange('showUnifiedOnly', e.target.checked);
-                  if (e.target.checked) onFilterChange('showSynergiesOnly', false);
-                }}
-                className="toggle-input-pro"
-              />
-              <span className="toggle-slider-pro"></span>
-              <span className="toggle-text-pro">Cursos unificados</span>
-            </label>
-          </div>
+        {/* Unified Toggle */}
+        <div className="filter-group">
+          <label className="filter-label">
+            <Sparkles size={14} />
+            Vista
+          </label>
+          <label className={`toggle-wrapper-pro toggle-wrapper-blue ${filters.showUnifiedOnly ? 'active' : ''}`}>
+            <input 
+              type="checkbox" 
+              checked={filters.showUnifiedOnly}
+              onChange={(e) => {
+                onFilterChange('showUnifiedOnly', e.target.checked);
+                if (e.target.checked) onFilterChange('showSynergiesOnly', false);
+              }}
+              className="toggle-input-pro"
+            />
+            <span className="toggle-slider-pro"></span>
+            <span className="toggle-text-pro">Cursos unificados</span>
+          </label>
         </div>
 
       </div>
