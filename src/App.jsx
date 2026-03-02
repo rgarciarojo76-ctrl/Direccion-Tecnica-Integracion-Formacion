@@ -38,9 +38,11 @@ function App() {
   const [filters, setFilters] = useState({
     search: '',
     startDate: '',
+    endDate: '',
     location: '',
     company: 'ALL',
-    showSynergiesOnly: false
+    showSynergiesOnly: false,
+    showUnifiedOnly: false
   });
 
   // Unique Values for "Tabulated" filters
@@ -59,17 +61,25 @@ function App() {
   // Filter Logic
   const filteredData = useMemo(() => {
     return data.filter(item => {
+      // Si el usuario quiere ver "Cursos Unificados", solo permitimos los grupos que tengan unificacion
+      // e ignoramos el filtro de fechas para ellos.
+      const isUnifiedGroup = item.type === 'group' && unifications[item.id];
+      if (filters.showUnifiedOnly && !isUnifiedGroup) {
+        return false;
+      }
+
       const checkCourse = (c) => {
          const matchesSearch = c.title.toLowerCase().includes(filters.search.toLowerCase()) || 
                                c.code.toLowerCase().includes(filters.search.toLowerCase());
          
          let matchesStart = true;
-         if (filters.startDate) {
+         // Bypass date checking if we are specifically showing unified courses
+         if (filters.startDate && !filters.showUnifiedOnly) {
            matchesStart = new Date(c.startDateRaw) >= new Date(filters.startDate);
          }
 
          let matchesEnd = true;
-         if (filters.endDate) {
+         if (filters.endDate && !filters.showUnifiedOnly) {
             matchesEnd = new Date(c.startDateRaw) <= new Date(filters.endDate);
          }
          
@@ -79,7 +89,7 @@ function App() {
          return matchesSearch && matchesStart && matchesEnd && matchesLoc && matchesCompany;
       };
 
-      if (filters.showSynergiesOnly) {
+      if (filters.showSynergiesOnly && !filters.showUnifiedOnly) {
           return item.type === 'group' && item.courses.some(checkCourse);
       }
 
@@ -89,7 +99,7 @@ function App() {
       
       return checkCourse(item);
     });
-  }, [data, filters]);
+  }, [data, filters, unifications]);
 
   // Load Data
   useEffect(() => {
@@ -143,12 +153,12 @@ function App() {
     });
   };
 
-  // Economic metrics
-  const synergyGroups = useMemo(() => 
-    filteredData.filter(item => item.type === 'group'), 
-    [filteredData]
+  // Economic metrics (Calculated over ALL data, independent of filters)
+  const allSynergyGroups = useMemo(() => 
+    data.filter(item => item.type === 'group'), 
+    [data]
   );
-  const economicMetrics = useUnificationMetrics(synergyGroups, unifications);
+  const economicMetrics = useUnificationMetrics(allSynergyGroups, unifications);
 
   return (
     <div className="app-container">

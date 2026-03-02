@@ -848,6 +848,11 @@ table tbody tr td {
   background: #10b981;
 }
 
+/* Specific styling for the Unificados toggle (Blue) */
+.toggle-wrapper-blue.active .toggle-slider-pro {
+  background-color: #009ee3; /* ASPY Blue */
+}
+
 .toggle-wrapper-pro.active .toggle-slider-pro::after {
   transform: translateX(14px);
 }
