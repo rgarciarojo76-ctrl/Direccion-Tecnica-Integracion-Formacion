@@ -1345,19 +1345,24 @@ vercel-toolbar,
 #vercel-toolbar,
 .vercel-toolbar,
 [data-vercel-toolbar],
-[id^="vercel-toolbar"],
-[class^="vercel-toolbar"],
+[id*="vercel"],
+[class*="vercel"],
 #__next-live-feedback,
+#vercel-live-feedback,
 .v0-badge {
   display: none !important;
   opacity: 0 !important;
   visibility: hidden !important;
   pointer-events: none !important;
-  z-index: -9999 !important;
+  z-index: -999999 !important;
   height: 0 !important;
   width: 0 !important;
   position: fixed !important;
   top: -9999px !important;
+  left: -9999px !important;
+  clip: rect(0 0 0 0) !important;
+  clip-path: inset(50%) !important;
+  margin: -1px !important;
 }
 
 body {
