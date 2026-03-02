@@ -3,7 +3,7 @@ import { TrendingUp, ArrowRightLeft } from 'lucide-react';
 
 /**
  * Dashboard Económico de Unificaciones.
- * Muestra un resumen financiero de las decisiones de unificación.
+ * Muestra un resumen financiero de las decisiones de unificación en una sola línea compacta.
  * 
  * @param {{ masToAspy: Object, aspyToMas: Object, totalImporte: number, totalGrupos: number }} metrics
  */
@@ -12,74 +12,68 @@ const EconomicDashboard = ({ metrics }) => {
 
   if (totalGrupos === 0) {
     return (
-      <div className="economic-dashboard economic-dashboard-empty">
-        <div className="economic-empty-content">
-          <ArrowRightLeft size={20} />
-          <span>Pulse "Imparte MAS" o "Imparte ASPY" en las tarjetas de sinergia para calcular el impacto económico.</span>
-        </div>
+      <div className="economic-dashboard-compact economic-empty-compact">
+        <ArrowRightLeft size={16} />
+        <span>Pulse "Imparte MAS" o "Imparte ASPY" en las sinergias para calcular el impacto.</span>
       </div>
     );
   }
 
   return (
-    <div className="economic-dashboard">
-      {/* Header */}
-      <div className="economic-header">
-        <div className="economic-header-icon">
-          <TrendingUp size={18} />
+    <div className="economic-dashboard-compact">
+      {/* Sección Izquierda: Título y Total */}
+      <div className="ec-compact-main">
+        <div className="ec-compact-icon">
+          <TrendingUp size={16} />
         </div>
-        <h3 className="economic-header-title">Resumen Económico de Unificaciones</h3>
-        <div className="economic-total-badge">
+        <span className="ec-compact-title">Ahorro Generado por Sinergias</span>
+        <div className="ec-compact-total">
           {totalImporte.toLocaleString('es-ES')} €
         </div>
       </div>
 
-      {/* Columns */}
-      <div className="economic-columns">
-        {/* MAS → ASPY */}
-        <div className="economic-column economic-column-aspy">
-          <h4 className="economic-column-title">
-            <span className="economic-arrow">→</span>
-            Cursos de MAS impartidos por ASPY
-          </h4>
-          <div className="economic-metrics-row">
-            <div className="economic-metric">
-              <span className="economic-metric-value">{masToAspy.grupos}</span>
-              <span className="economic-metric-label">Grupos</span>
-            </div>
-            <div className="economic-metric">
-              <span className="economic-metric-value">{masToAspy.alumnos}</span>
-              <span className="economic-metric-label">Alumnos</span>
-            </div>
-            <div className="economic-metric economic-metric-highlight">
-              <span className="economic-metric-value">{masToAspy.importe.toLocaleString('es-ES')} €</span>
-              <span className="economic-metric-label">Importe</span>
-            </div>
+      <div className="ec-compact-divider"></div>
+
+      {/* Sección Centro: MAS -> ASPY */}
+      <div className="ec-compact-column">
+        <div className="ec-compact-col-title text-aspy">
+          <span className="ec-arrow">→</span> CURSOS DE MAS IMPARTIDOS POR ASPY
+        </div>
+        <div className="ec-compact-stats">
+          <div className="ec-stat">
+            <span className="ec-stat-val">{masToAspy.grupos}</span>
+            <span className="ec-stat-lbl">GRUPOS</span>
+          </div>
+          <div className="ec-stat">
+            <span className="ec-stat-val">{masToAspy.alumnos}</span>
+            <span className="ec-stat-lbl">ALUMNOS</span>
+          </div>
+          <div className="ec-stat">
+            <span className="ec-stat-val text-aspy">{masToAspy.importe.toLocaleString('es-ES')} €</span>
+            <span className="ec-stat-lbl">IMPORTE</span>
           </div>
         </div>
+      </div>
 
-        {/* Divider */}
-        <div className="economic-divider"></div>
+      <div className="ec-compact-divider"></div>
 
-        {/* ASPY → MAS */}
-        <div className="economic-column economic-column-mas">
-          <h4 className="economic-column-title">
-            <span className="economic-arrow">→</span>
-            Cursos de ASPY impartidos por MAS
-          </h4>
-          <div className="economic-metrics-row">
-            <div className="economic-metric">
-              <span className="economic-metric-value">{aspyToMas.grupos}</span>
-              <span className="economic-metric-label">Grupos</span>
-            </div>
-            <div className="economic-metric">
-              <span className="economic-metric-value">{aspyToMas.alumnos}</span>
-              <span className="economic-metric-label">Alumnos</span>
-            </div>
-            <div className="economic-metric economic-metric-highlight">
-              <span className="economic-metric-value">{aspyToMas.importe.toLocaleString('es-ES')} €</span>
-              <span className="economic-metric-label">Importe</span>
-            </div>
+      {/* Sección Derecha: ASPY -> MAS */}
+      <div className="ec-compact-column">
+        <div className="ec-compact-col-title text-mas">
+          <span className="ec-arrow">→</span> CURSOS DE ASPY IMPARTIDOS POR MAS
+        </div>
+        <div className="ec-compact-stats">
+          <div className="ec-stat">
+            <span className="ec-stat-val">{aspyToMas.grupos}</span>
+            <span className="ec-stat-lbl">GRUPOS</span>
+          </div>
+          <div className="ec-stat">
+            <span className="ec-stat-val">{aspyToMas.alumnos}</span>
+            <span className="ec-stat-lbl">ALUMNOS</span>
+          </div>
+          <div className="ec-stat">
+            <span className="ec-stat-val text-mas">{aspyToMas.importe.toLocaleString('es-ES')} €</span>
+            <span className="ec-stat-lbl">IMPORTE</span>
           </div>
         </div>
       </div>

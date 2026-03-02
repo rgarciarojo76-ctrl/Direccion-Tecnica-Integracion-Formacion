@@ -1100,143 +1100,132 @@ table tbody tr td {
 }
 
 /* ========================================
-   ECONOMIC DASHBOARD
+   ECONOMIC DASHBOARD (COMPACT)
    ======================================== */
 
-.economic-dashboard {
-  background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+.economic-dashboard-compact {
+  background: linear-gradient(to right, #f8fafc, #f1f5f9);
   border: 1px solid #e2e8f0;
   border-top: 3px solid var(--primary-color);
   border-radius: var(--border-radius);
-  padding: 1.25rem 1.5rem;
-  margin-bottom: 1rem;
+  padding: 0.75rem 1.5rem;
+  margin-bottom: 1.5rem;
   box-shadow: var(--shadow-sm);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1.5rem;
 }
 
-.economic-dashboard-empty {
+.economic-empty-compact {
   border-top-color: #cbd5e1;
-}
-
-.economic-empty-content {
-  display: flex;
-  align-items: center;
-  gap: 0.75rem;
-  color: #94a3b8;
+  justify-content: flex-start;
+  color: #64748b;
   font-size: 0.85rem;
+  font-weight: 500;
 }
 
-.economic-header {
+.ec-compact-main {
   display: flex;
   align-items: center;
   gap: 0.75rem;
-  margin-bottom: 1rem;
+  min-width: max-content;
 }
 
-.economic-header-icon {
+.ec-compact-icon {
   background: rgba(0, 158, 227, 0.1);
   color: var(--primary-color);
-  padding: 0.4rem;
-  border-radius: 8px;
+  padding: 0.35rem;
+  border-radius: 6px;
   display: flex;
   align-items: center;
 }
 
-.economic-header-title {
+.ec-compact-title {
   font-size: 0.85rem;
   font-weight: 700;
   color: var(--secondary-color);
   letter-spacing: 0.02em;
+}
+
+.ec-compact-total {
+  background: var(--primary-color);
+  color: white;
+  font-size: 0.85rem;
+  font-weight: 700;
+  padding: 0.25rem 0.8rem;
+  border-radius: 9999px;
+  box-shadow: 0 2px 4px rgba(0, 158, 227, 0.2);
+  margin-left: 0.5rem;
+}
+
+.ec-compact-divider {
+  width: 1px;
+  background-color: #cbd5e1;
+  align-self: stretch;
+  margin: 0.25rem 0;
+}
+
+.ec-compact-column {
+  display: flex;
+  flex-direction: column;
   flex: 1;
 }
 
-.economic-total-badge {
-  background: linear-gradient(135deg, #009ee3, #0077b6);
-  color: white;
-  font-size: 0.9rem;
-  font-weight: 700;
-  padding: 0.4rem 1rem;
-  border-radius: 9999px;
-  box-shadow: 0 2px 6px rgba(0, 158, 227, 0.3);
-}
-
-.economic-columns {
-  display: grid;
-  grid-template-columns: 1fr auto 1fr;
-  gap: 1rem;
-  align-items: stretch;
-}
-
-.economic-divider {
-  width: 1px;
-  background: #e2e8f0;
-  min-height: 60px;
-}
-
-.economic-column {
-  padding: 0.5rem 0;
-}
-
-.economic-column-title {
-  font-size: 0.75rem;
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 0.04em;
-  margin-bottom: 0.75rem;
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-}
-
-.economic-column-aspy .economic-column-title {
-  color: #009ee3;
-}
-
-.economic-column-mas .economic-column-title {
-  color: #7c3aed;
-}
-
-.economic-arrow {
-  font-size: 1rem;
-  opacity: 0.6;
-}
-
-.economic-metrics-row {
-  display: flex;
-  gap: 1.5rem;
-}
-
-.economic-metric {
-  display: flex;
-  flex-direction: column;
-  gap: 0.15rem;
-}
-
-.economic-metric-value {
-  font-size: 1.2rem;
-  font-weight: 700;
-  color: var(--secondary-color);
-}
-
-.economic-metric-highlight .economic-metric-value {
-  color: var(--primary-color);
-}
-
-.economic-metric-label {
+.ec-compact-col-title {
   font-size: 0.65rem;
-  font-weight: 600;
+  font-weight: 800;
   text-transform: uppercase;
   letter-spacing: 0.05em;
-  color: #94a3b8;
+  margin-bottom: 0.4rem;
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
 }
 
-@media (max-width: 768px) {
-  .economic-columns {
-    grid-template-columns: 1fr;
+.text-aspy { color: #009ee3; }
+.text-mas { color: #7c3aed; }
+
+.ec-arrow {
+  opacity: 0.6;
+  font-size: 0.8rem;
+}
+
+.ec-compact-stats {
+  display: flex;
+  gap: 1.5rem;
+  align-items: baseline;
+}
+
+.ec-stat {
+  display: flex;
+  align-items: baseline;
+  gap: 0.35rem;
+}
+
+.ec-stat-val {
+  font-size: 1.1rem;
+  font-weight: 800;
+  color: var(--secondary-color);
+  line-height: 1;
+}
+
+.ec-stat-lbl {
+  font-size: 0.6rem;
+  font-weight: 700;
+  color: #94a3b8;
+  letter-spacing: 0.05em;
+}
+
+@media (max-width: 1024px) {
+  .economic-dashboard-compact {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 1rem;
   }
-  .economic-divider {
-    width: 100%;
+  .ec-compact-divider {
     height: 1px;
-    min-height: 0;
+    width: 100%;
   }
 }
 
