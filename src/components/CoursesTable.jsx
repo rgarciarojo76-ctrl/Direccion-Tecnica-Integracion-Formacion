@@ -1,5 +1,5 @@
 import React from 'react';
-import { Users, Search, AlertTriangle, MapPin, CheckCircle2 } from 'lucide-react';
+import { Users, Search, AlertTriangle, MapPin, CheckCircle2, RotateCcw } from 'lucide-react';
 
 const CoursesTable = ({ data, unifications = {}, onUnify, onUndoUnify }) => {
 
@@ -232,6 +232,7 @@ const CoursesTable = ({ data, unifications = {}, onUnify, onUndoUnify }) => {
                       </>
                     ) : (
                       <button className="btn-undo-unify" onClick={() => onUndoUnify && onUndoUnify(item.id)}>
+                        <RotateCcw size={14} />
                         Deshacer unificación
                       </button>
                     )}
