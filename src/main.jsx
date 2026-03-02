@@ -17,14 +17,14 @@ const killVercelTools = () => {
     selectors.forEach(sel => {
       try {
         root.querySelectorAll(sel).forEach(el => el.remove());
-      } catch (e) {}
+      } catch { }
     });
     // Recursive Shadow DOM walk
     try {
       root.querySelectorAll('*').forEach(el => {
         if (el.shadowRoot) clean(el.shadowRoot);
       });
-    } catch (e) {}
+    } catch { }
   };
 
   clean(document);
@@ -35,9 +35,12 @@ const observer = new MutationObserver(() => killVercelTools());
 observer.observe(document.documentElement, { childList: true, subtree: true });
 
 // Initial kill after short delay to catch platform injections
-setTimeout(killVercelTools, 100);
+setTimeout(killVercelTools, 50);
+setTimeout(killVercelTools, 150);
+setTimeout(killVercelTools, 500);
 setTimeout(killVercelTools, 1000);
-setTimeout(killVercelTools, 5000);
+setTimeout(killVercelTools, 3000);
+setTimeout(killVercelTools, 10000);
 
 createRoot(document.getElementById('root')).render(
   <StrictMode>

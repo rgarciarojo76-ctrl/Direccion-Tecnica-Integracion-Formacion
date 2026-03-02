@@ -2,251 +2,6 @@ import React from 'react';
 import { Users, Search, AlertTriangle, MapPin, CheckCircle2, RotateCcw } from 'lucide-react';
 
 const CoursesTable = ({ data, unifications = {}, onUnify, onUndoUnify }) => {
-
-  const getLogo = (source) => {
-    if (source === 'ASPY') return '/logos/aspy_logo.png';
-    if (source === 'MAS') return '/logos/mas_logo.png';
-    return null;
-  };
-
-  const Row = ({ row }) => {
-     const cardClass = row.source === 'ASPY' ? 'course-card-aspy' : 'course-card-mas';
-
-     return (
-        <tr className={`course-row ${cardClass}`}>
-          {/* Organizadora */}
-          <td className="p-2 text-center align-middle border-none">
-             <div className="h-10 w-20 flex items-center justify-center mx-auto bg-white/50 rounded p-1 border border-slate-200/50">
-               <img 
-                  src={getLogo(row.source)} 
-                  alt={row.source} 
-                  className="h-8 w-auto object-contain"
-                  style={{ maxWidth: '80px', maxHeight: '32px' }}
-               />
-             </div>
-          </td>
-
-          {/* Curso */}
-          <td className="p-4 align-middle border-none max-w-sm">
-            <div className="flex flex-col gap-1">
-              <span className="font-bold text-slate-800 text-[14px] leading-tight group-hover:text-current transition-colors">
-                {row.title}
-              </span>
-              <span className="text-[11px] text-slate-500 font-mono bg-white/50 inline-block px-2 py-0.5 rounded w-fit border border-slate-200/50">
-                {row.code}
-              </span>
-            </div>
-          </td>
-
-          {/* Modalidad */}
-          <td className="p-4 align-middle text-center border-none">
-            <span className={`inline-flex items-center px-2.5 py-1 rounded-md text-xs font-semibold bg-white/80 border ${
-               row.modalidad === 'Presencial' ? 'text-blue-700 border-blue-100' : 'text-purple-700 border-purple-100'
-            }`}>
-              {row.modalidad}
-            </span>
-          </td>
-
-          {/* Duración */}
-          <td className="p-4 text-center align-middle border-none">
-             <div className="text-sm font-bold text-slate-600">
-                {row.duracion_presencial}
-             </div>
-          </td>
-
-          {/* Inicio */}
-          <td className="p-4 text-center align-middle border-none">
-            <span className="text-xs font-bold text-slate-700">{row.startDatefmt}</span>
-          </td>
-
-          {/* Fin */}
-          <td className="p-4 text-center align-middle border-none">
-            <span className="text-xs font-bold text-slate-700">{row.endDatefmt}</span>
-          </td>
-
-          {/* Ubicación */}
-          <td className="p-4 align-middle border-none">
-            <div className="flex items-center gap-2 text-sm font-medium text-slate-600">
-               <span className="w-1.5 h-1.5 rounded-full bg-slate-400"></span>
-               {row.ubicacion}
-            </div>
-          </td>
-
-          {/* Máximo */}
-          <td className="p-4 text-center align-middle border-none text-sm font-mono text-slate-500">
-            {row.totalPlazas}
-          </td>
-
-          {/* Inscritos */}
-          <td className="p-4 text-center align-middle border-none text-sm font-mono text-slate-800 font-bold">
-            {row.inscritos}
-          </td>
-
-          {/* Disponibles */}
-          <td className="p-4 text-center align-middle border-none relative">
-              <div className={`px-3 py-1.5 rounded-lg text-sm font-bold border inline-flex items-center justify-center min-w-[50px] bg-white ${
-                  row.plazas > 0 ? 'text-emerald-700 border-emerald-200' : 'text-rose-700 border-rose-200'
-              }`}>
-                  {row.plazas}
-              </div>
-          </td>
-        </tr>
-     );
-  };
-
-  /**
-   * Renders the synergy group card with dynamic content based on scenarioType.
-   */
-  const SynergyGroup = ({ item }) => {
-    const scenario = item.scenarioType || 'optimal';
-    const unifiedAs = unifications[item.id]; // 'MAS' | 'ASPY' | undefined
-    const isUnifiable = scenario === 'optimal' || scenario === 'permuted';
-
-    // Card CSS class by scenario
-    const cardClassMap = {
-      optimal: 'synergy-card',
-      permuted: 'synergy-card',
-      overflow: 'synergy-card synergy-card-warning',
-      reference_potential: 'synergy-card synergy-card-ref-potential',
-      reference_unlikely: 'synergy-card synergy-card-ref-unlikely',
-    };
-    const cardClass = cardClassMap[scenario] || 'synergy-card';
-
-    // Badge text & icon
-    const badgeInfo = {
-      optimal:             { text: '✨ AGRUPACIÓN RECOMENDADA', className: 'synergy-card-badge' },
-      permuted:            { text: '🔄 AGRUPACIÓN RECOMENDADA (PERMUTADA)', className: 'synergy-card-badge' },
-      overflow:            { text: '⚠️ AGRUPACIÓN NO RECOMENDADA', className: 'synergy-card-badge synergy-card-badge-warning' },
-      reference_potential: { text: '🟠 POSIBLE AGRUPACIÓN FUTURA', className: 'synergy-card-badge synergy-card-badge-ref-potential' },
-      reference_unlikely:  { text: '🔴 IMPROBABLE AGRUPACIÓN FUTURA', className: 'synergy-card-badge synergy-card-badge-ref-unlikely' },
-    };
-
-    const badge = badgeInfo[scenario] || badgeInfo.optimal;
-
-    // Gradient class
-    const gradientClassMap = {
-      overflow: 'synergy-gradient-warning',
-      reference_potential: 'synergy-gradient-ref-potential',
-      reference_unlikely: 'synergy-gradient-ref-unlikely',
-    };
-    const gradientExtra = gradientClassMap[scenario] || '';
-
-    // Icon & message
-    const renderMessage = () => {
-      if (scenario === 'reference_potential') {
-        return (
-          <div className="flex items-center gap-3 mb-4 px-2">
-            <div className="synergy-icon-circle synergy-icon-ref-potential">
-              <MapPin size={18} />
-            </div>
-            <div className="synergy-text-ref-potential">
-              {item.suggestion}
-            </div>
-          </div>
-        );
-      }
-
-      if (scenario === 'reference_unlikely') {
-        return (
-          <div className="flex items-center gap-3 mb-4 px-2">
-            <div className="synergy-icon-circle synergy-icon-ref-unlikely">
-              <AlertTriangle size={18} />
-            </div>
-            <div className="synergy-text-ref-unlikely">
-              {item.suggestion}
-            </div>
-          </div>
-        );
-      }
-
-      if (scenario === 'overflow') {
-        return (
-          <div className="flex items-center gap-3 mb-4 px-2">
-            <div className="synergy-icon-circle synergy-icon-warning">
-              <AlertTriangle size={18} />
-            </div>
-            <div className="synergy-text-warning">
-              {item.suggestion}
-            </div>
-          </div>
-        );
-      }
-
-      // optimal or permuted
-      return (
-        <div className="flex items-center gap-3 mb-4 px-2">
-          <div className="synergy-icon-circle">
-            <Users size={18} />
-          </div>
-          <div className="synergy-text-primary">
-            {item.suggestion}
-          </div>
-        </div>
-      );
-    };
-
-    return (
-      <React.Fragment>
-        <tr className="h-4"></tr>
-        <tr>
-          <td colSpan="10" className="p-0 border-none">
-            <div className={cardClass}>
-              {/* Header Gradient */}
-              <div className={`synergy-card-header-gradient ${gradientExtra}`}></div>
-              
-              {/* Badges Container */}
-              <div className="synergy-card-badges-container">
-                <div className={badge.className}>
-                  <span>{badge.text}</span>
-                </div>
-                {/* Unified badge (Moved up next to the main badge) */}
-                {unifiedAs && (
-                  <div className={`unify-badge-inline ${unifiedAs === 'MAS' ? 'unify-badge-mas' : 'unify-badge-aspy'}`}>
-                    <CheckCircle2 size={14} />
-                    CURSOS UNIFICADOS — Imparte {unifiedAs}
-                  </div>
-                )}
-              </div>
-
-              <div className="p-6 pt-10">
-
-                {renderMessage()}
-
-                <table className="w-full border-separate border-spacing-y-2">
-                  <tbody>
-                    {item.courses.map(course => <Row key={course.id} row={course} />)}
-                  </tbody>
-                </table>
-
-                {/* Unification action buttons */}
-                {isUnifiable && (
-                  <div className="unify-actions">
-                    {!unifiedAs ? (
-                      <>
-                        <button className="btn-unify btn-unify-aspy" onClick={() => onUnify && onUnify(item.id, 'ASPY')}>
-                          Imparte ASPY
-                        </button>
-                        <button className="btn-unify btn-unify-mas" onClick={() => onUnify && onUnify(item.id, 'MAS')}>
-                          Imparte MAS
-                        </button>
-                      </>
-                    ) : (
-                      <button className="btn-undo-unify" onClick={() => onUndoUnify && onUndoUnify(item.id)}>
-                        <RotateCcw size={14} />
-                        Deshacer unificación
-                      </button>
-                    )}
-                  </div>
-                )}
-              </div>
-            </div>
-          </td>
-        </tr>
-        <tr className="h-4"></tr>
-      </React.Fragment>
-    );
-  };
-
   return (
     <div className="w-full">
       <table className="w-full text-left border-separate border-spacing-y-4">
@@ -267,7 +22,15 @@ const CoursesTable = ({ data, unifications = {}, onUnify, onUndoUnify }) => {
         <tbody className="text-sm">
           {data.map((item) => {
             if (item.type === 'group') {
-              return <SynergyGroup key={item.id} item={item} unifiedAs={unifications[item.id]} />;
+              return (
+                <SynergyGroup 
+                  key={item.id} 
+                  item={item} 
+                  unifiedAs={unifications[item.id]} 
+                  onUnify={onUnify} 
+                  onUndoUnify={onUndoUnify} 
+                />
+              );
             }
             return <Row key={item.id} row={item} />;
           })}
@@ -288,5 +51,4 @@ const CoursesTable = ({ data, unifications = {}, onUnify, onUndoUnify }) => {
     </div>
   );
 };
-
 export default CoursesTable;

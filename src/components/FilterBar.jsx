@@ -1,7 +1,7 @@
 import React from 'react';
 import { Search, MapPin, Calendar, Sparkles, Building2 } from 'lucide-react';
 
-const FilterBar = ({ filters, onFilterChange, uniqueTitles = [], uniqueLocations = [] }) => {
+const FilterBar = React.memo(({ filters, onFilterChange, uniqueTitles = [], uniqueLocations = [] }) => {
   const handleChange = (e) => {
     const { name, value } = e.target;
     onFilterChange(name, value);
@@ -157,6 +157,6 @@ const FilterBar = ({ filters, onFilterChange, uniqueTitles = [], uniqueLocations
       </div>
     </div>
   );
-};
+});
 
 export default FilterBar;
