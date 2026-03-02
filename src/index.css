@@ -1255,12 +1255,12 @@ table tbody tr td {
    ======================================== */
 
 .unify-actions {
+  position: absolute;
+  top: 24px;
+  right: 24px;
   display: flex;
   gap: 0.75rem;
-  margin-top: 1rem;
-  padding-top: 0.75rem;
-  border-top: 1px dashed #d1d5db;
-  justify-content: flex-end;
+  z-index: 10;
 }
 
 .btn-unify {
