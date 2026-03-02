@@ -58,8 +58,19 @@ function App() {
     return [...new Set(locs)].sort();
   }, [data]);
 
+  // Pre-calculate timestamps for ultra-fast filtering
+  const filterTimestamps = useMemo(() => {
+    return {
+      start: filters.startDate ? new Date(filters.startDate).getTime() : null,
+      end: filters.endDate ? new Date(filters.endDate).getTime() : null
+    };
+  }, [filters.startDate, filters.endDate]);
+
   // Filter Logic
   const filteredData = useMemo(() => {
+    const { start, end } = filterTimestamps;
+    const searchLower = filters.search.toLowerCase();
+
     return data.filter(item => {
       // Si el usuario quiere ver "Cursos Unificados", solo permitimos los grupos que tengan unificacion
       // e ignoramos el filtro de fechas para ellos.
@@ -69,18 +80,20 @@ function App() {
       }
 
       const checkCourse = (c) => {
-         const matchesSearch = c.title.toLowerCase().includes(filters.search.toLowerCase()) || 
-                               c.code.toLowerCase().includes(filters.search.toLowerCase());
+         const matchesSearch = c.title.toLowerCase().includes(searchLower) || 
+                               c.code.toLowerCase().includes(searchLower);
          
+         const courseTime = c.startDateRaw ? (c.startDateRaw instanceof Date ? c.startDateRaw.getTime() : new Date(c.startDateRaw).getTime()) : null;
+
          let matchesStart = true;
          // Bypass date checking if we are specifically showing unified courses
-         if (filters.startDate && !filters.showUnifiedOnly) {
-           matchesStart = new Date(c.startDateRaw) >= new Date(filters.startDate);
+         if (start && !filters.showUnifiedOnly) {
+           matchesStart = courseTime && courseTime >= start;
          }
 
          let matchesEnd = true;
-         if (filters.endDate && !filters.showUnifiedOnly) {
-            matchesEnd = new Date(c.startDateRaw) <= new Date(filters.endDate);
+         if (end && !filters.showUnifiedOnly) {
+            matchesEnd = courseTime && courseTime <= end;
          }
          
          const matchesLoc = filters.location === '' || c.ubicacion === filters.location;
@@ -99,7 +112,7 @@ function App() {
       
       return checkCourse(item);
     });
-  }, [data, filters, unifications]);
+  }, [data, filters, unifications, filterTimestamps]);
 
   // Load Data
   useEffect(() => {
