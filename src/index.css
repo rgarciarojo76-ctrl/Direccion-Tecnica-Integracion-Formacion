@@ -547,7 +547,6 @@ table tbody tr td {
 }
 
 .unify-badge-inline {
-  background: linear-gradient(135deg, #009ee3, #0077b6);
   color: white;
   font-size: 0.65rem; /* Match the other badge */
   font-weight: 700;
@@ -559,6 +558,14 @@ table tbody tr td {
   align-items: center;
   gap: 0.4rem;
   letter-spacing: 0.03em;
+}
+
+.unify-badge-aspy {
+  background: linear-gradient(135deg, #009ee3, #0077b6);
+}
+
+.unify-badge-mas {
+  background: linear-gradient(135deg, #5b7fa5, #446587); /* MAS corporate blue/gray */
 }
 
 .synergy-icon-circle {

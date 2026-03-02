@@ -201,7 +201,7 @@ const CoursesTable = ({ data, unifications = {}, onUnify, onUndoUnify }) => {
                 </div>
                 {/* Unified badge (Moved up next to the main badge) */}
                 {unifiedAs && (
-                  <div className="unify-badge-inline">
+                  <div className={`unify-badge-inline ${unifiedAs === 'MAS' ? 'unify-badge-mas' : 'unify-badge-aspy'}`}>
                     <CheckCircle2 size={14} />
                     CURSOS UNIFICADOS — Imparte {unifiedAs}
                   </div>
