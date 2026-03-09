@@ -249,10 +249,10 @@ const parseRow = (row, source) => {
         fechaFinRaw = row[4];
         modalidad = row[5];
         duracion = row[6];
-        ubicacionRaw = row[16] || row[17];
-        plazasTotales = row[18];
-        plazasDisponibles = row[19];
-        inscritosRaw = row[29];
+        ubicacionRaw = row[10]; // Provincia
+        plazasDisponibles = row[11];
+        inscritosRaw = row[14]; // Alumnos Inscritos
+        plazasTotales = (parseInt(inscritosRaw, 10) || 0) + (parseInt(plazasDisponibles, 10) || 0);
     }
     
     if (!rawTitle) return null;
