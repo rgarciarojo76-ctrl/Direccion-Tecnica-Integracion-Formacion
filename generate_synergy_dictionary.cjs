@@ -95,7 +95,7 @@ function matchScore(t1, t2) {
 const DATA_DIR = path.join(__dirname, 'public', 'data');
 
 function loadASPY() {
-    const wb = XLSX.readFile(path.join(DATA_DIR, 'aspy_blue_2026.xlsx'));
+    const wb = XLSX.readFile(path.join(DATA_DIR, 'aspy_formacion.xlsx'));
     const ws = wb.Sheets[wb.SheetNames[0]];
     const rows = XLSX.utils.sheet_to_json(ws, { header: 1 }).slice(1);
     
@@ -111,7 +111,7 @@ function loadASPY() {
 }
 
 function loadMAS() {
-    const wb = XLSX.readFile(path.join(DATA_DIR, 'mas_2026.xls'));
+    const wb = XLSX.readFile(path.join(DATA_DIR, 'mas_formacion.xls'));
     const ws = wb.Sheets[wb.SheetNames[0]];
     const rows = XLSX.utils.sheet_to_json(ws, { header: 1 }).slice(1);
 
