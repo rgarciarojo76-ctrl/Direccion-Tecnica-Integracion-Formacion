@@ -1,5 +1,5 @@
 import React from 'react';
-import { Search, MapPin, Calendar, Sparkles, Building2 } from 'lucide-react';
+import { Search, MapPin, Calendar, Sparkles, Building2, Filter } from 'lucide-react';
 
 const FilterBar = React.memo(({ filters, onFilterChange, uniqueTitles = [], uniqueLocations = [] }) => {
   const handleChange = (e) => {
@@ -72,6 +72,48 @@ const FilterBar = React.memo(({ filters, onFilterChange, uniqueTitles = [], uniq
             <span className="toggle-slider-pro"></span>
             <span className="toggle-text-pro">Cursos unificados</span>
           </label>
+        </div>
+
+        {/* Viabilities Filter (NEW) */}
+        <div className="filter-group">
+          <label className="filter-label">
+            <Filter size={14} />
+            Viabilidad
+          </label>
+          <div className="tabs-container-pro" style={{ flexWrap: 'wrap' }}>
+            {[
+              { id: 'Recomendada', label: 'Recomendada' },
+              { id: 'Posible', label: 'Posible' },
+              { id: 'Improbable', label: 'Improbable' },
+              { id: 'No recomendada', label: 'No rec.' }
+            ].map((opt) => {
+              const isActive = filters.viabilities?.includes(opt.id);
+              return (
+                <button
+                  key={opt.id}
+                  className={`tab-btn-pro ${isActive ? 'active' : ''}`}
+                  style={isActive ? { color: 'var(--primary-color)', boxShadow: '0 1px 3px rgba(0, 158, 227, 0.2)' } : {}}
+                  onClick={() => {
+                    let newViabilities = [...(filters.viabilities || [])];
+                    if (isActive) {
+                      newViabilities = newViabilities.filter(v => v !== opt.id);
+                    } else {
+                      newViabilities.push(opt.id);
+                    }
+                    onFilterChange('viabilities', newViabilities);
+                    
+                    // Si se selecciona alguna viabilidad y no estaba activada la vista de sinergias, activarla
+                    if (newViabilities.length > 0 && !filters.showSynergiesOnly) {
+                      onFilterChange('showSynergiesOnly', true);
+                      onFilterChange('showUnifiedOnly', false);
+                    }
+                  }}
+                >
+                  {opt.label}
+                </button>
+              );
+            })}
+          </div>
         </div>
 
       </div>

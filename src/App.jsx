@@ -42,7 +42,8 @@ function App() {
     location: '',
     company: 'ALL',
     showSynergiesOnly: false,
-    showUnifiedOnly: false
+    showUnifiedOnly: false,
+    viabilities: []
   });
 
   // Unique Values for "Tabulated" filters
@@ -71,7 +72,24 @@ function App() {
     const { start, end } = filterTimestamps;
     const searchLower = filters.search.toLowerCase();
 
+    // Mapping viabilities array to allowed scenarioTypes
+    let allowedScenarios = null;
+    if (filters.viabilities && filters.viabilities.length > 0) {
+      allowedScenarios = [];
+      if (filters.viabilities.includes('Recomendada')) allowedScenarios.push('optimal', 'permuted');
+      if (filters.viabilities.includes('Posible')) allowedScenarios.push('reference_potential');
+      if (filters.viabilities.includes('Improbable')) allowedScenarios.push('reference_unlikely');
+      if (filters.viabilities.includes('No recomendada')) allowedScenarios.push('overflow');
+    }
+
     return data.filter(item => {
+      // If viabilities filter is active, only show matching groups
+      if (allowedScenarios) {
+        if (item.type !== 'group' || !allowedScenarios.includes(item.scenarioType)) {
+          return false;
+        }
+      }
+
       // Si el usuario quiere ver "Cursos Unificados", solo permitimos los grupos que tengan unificacion
       // e ignoramos el filtro de fechas para ellos.
       const isUnifiedGroup = item.type === 'group' && unifications[item.id];
