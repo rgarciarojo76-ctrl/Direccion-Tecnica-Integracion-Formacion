@@ -18,9 +18,18 @@ const TOPIC_MAP = {
 };
 
 // UTILS
-const cleanTitle = (rawString) => {
+const cleanTitle = (rawString, source) => {
   if (!rawString) return "Sin Título";
-  return rawString.replace(/\s*\([^)]+\)/, '').trim();
+  let title = rawString;
+  if (source === 'ASPY') {
+      title = title.replace(/\[.*?\]/g, '').trim();
+      title = title.replace(/\s*\(.*?\)\s*$/, '').trim();
+  } else if (source === 'MAS') {
+      title = title.trim();
+  } else {
+      title = title.trim();
+  }
+  return title;
 };
 
 const normalizeTopic = (text) => {
@@ -249,10 +258,10 @@ const parseRow = (row, source) => {
         fechaFinRaw = row[4];
         modalidad = row[5];
         duracion = row[6];
-        ubicacionRaw = row[10]; // Provincia
-        plazasDisponibles = row[11];
-        inscritosRaw = row[14]; // Alumnos Inscritos
-        plazasTotales = (parseInt(inscritosRaw, 10) || 0) + (parseInt(plazasDisponibles, 10) || 0);
+        ubicacionRaw = row[16]; // Provincia
+        plazasDisponibles = row[19];
+        inscritosRaw = row[29]; // Alumnos Inscritos
+        plazasTotales = row[18]; // Nº máximo de alumnos
     }
     
     if (!rawTitle) return null;
@@ -262,7 +271,7 @@ const parseRow = (row, source) => {
     const fechaInicioStr = formatDate(startDateObj) || fechaInicioRaw;
     const fechaFinStr = formatDate(endDateObj) || fechaFinRaw;
     const ubicacion = normalizeLocation(ubicacionRaw);
-    let title = cleanTitle(rawTitle);
+    let title = cleanTitle(rawTitle, source);
     let topic = normalizeTopic(title);
     const finalDuration = parseInt(duracion, 10) || 0;
     const total = parseInt(plazasTotales, 10) || 0;
@@ -325,8 +334,8 @@ export const loadSynergyDictionary = async () => {
         const json = utils.sheet_to_json(ws, { header: 1 }).slice(1);
         
         return json.map(row => ({
-            aspyTitle: cleanTitle(row[0]),
-            masTitle: cleanTitle(row[1])
+            aspyTitle: cleanTitle(row[0], 'Dict'),
+            masTitle: cleanTitle(row[1], 'Dict')
         })).filter(pair => pair.aspyTitle && pair.masTitle);
     } catch (e) {
         console.warn("Could not load synergy dictionary:", e);
