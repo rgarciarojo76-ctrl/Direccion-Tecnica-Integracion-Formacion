@@ -17,14 +17,14 @@ const killVercelTools = () => {
     selectors.forEach(sel => {
       try {
         root.querySelectorAll(sel).forEach(el => el.remove());
-      } catch { }
+      } catch { /* ignore */ }
     });
     // Recursive Shadow DOM walk
     try {
       root.querySelectorAll('*').forEach(el => {
         if (el.shadowRoot) clean(el.shadowRoot);
       });
-    } catch { }
+    } catch { /* ignore */ }
   };
 
   clean(document);
