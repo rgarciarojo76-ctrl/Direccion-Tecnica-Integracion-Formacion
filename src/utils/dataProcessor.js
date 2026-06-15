@@ -213,6 +213,25 @@ const normalizeLocation = (rawLoc) => {
     return clean.charAt(0).toUpperCase() + clean.slice(1);
 };
 
+const getDefaultCapacity = (title) => {
+    if (!title) return 15;
+    const lower = title.toLowerCase();
+    if (
+        lower.includes('carretilla') || 
+        lower.includes('frontal') || 
+        lower.includes('retracil') || 
+        lower.includes('apilador') ||
+        lower.includes('plataforma') || 
+        lower.includes('pemp') ||
+        lower.includes('altura') || 
+        lower.includes('vertical') ||
+        lower.includes('grua')
+    ) {
+        return 5;
+    }
+    return 15;
+};
+
 // Common parser with source switching
 const parseRow = (row, source) => {
     let rawTitle, fechaInicioRaw, fechaFinRaw, modalidad, duracion, ubicacionRaw, plazasTotales, plazasDisponibles, id, code, inscritosRaw;
@@ -253,15 +272,34 @@ const parseRow = (row, source) => {
     } else {
         id = `MAS-${row[0]}`;
         code = `MAS-${row[0]}`;
-        rawTitle = row[1] || row[2];
-        fechaInicioRaw = row[3];
-        fechaFinRaw = row[4];
-        modalidad = row[5];
-        duracion = row[6];
-        ubicacionRaw = row[16]; // Provincia
-        plazasDisponibles = row[19];
-        inscritosRaw = row[29]; // Alumnos Inscritos
-        plazasTotales = row[18]; // Nº máximo de alumnos
+        if (row.length < 15) {
+            // New 13-column format
+            rawTitle = row[1];
+            fechaInicioRaw = row[2];
+            fechaFinRaw = row[3];
+            modalidad = row[4];
+            duracion = row[5];
+            ubicacionRaw = row[10];
+            plazasDisponibles = row[11];
+            
+            // Dynamic estimation of capacity when they are missing
+            const cleanT = cleanTitle(rawTitle, 'MAS');
+            const defaultCap = getDefaultCapacity(cleanT);
+            const available = plazasDisponibles !== undefined ? (parseInt(plazasDisponibles, 10) || 0) : 0;
+            plazasTotales = Math.max(defaultCap, available);
+            inscritosRaw = Math.max(0, plazasTotales - available);
+        } else {
+            // Old 32-column format
+            rawTitle = row[1] || row[2];
+            fechaInicioRaw = row[3];
+            fechaFinRaw = row[4];
+            modalidad = row[5];
+            duracion = row[6];
+            ubicacionRaw = row[16]; // Provincia
+            plazasDisponibles = row[19];
+            inscritosRaw = row[29]; // Alumnos Inscritos
+            plazasTotales = row[18]; // Nº máximo de alumnos
+        }
     }
     
     if (!rawTitle) return null;
